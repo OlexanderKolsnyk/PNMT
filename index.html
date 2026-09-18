@@ -140,7 +140,7 @@ const CONFIG={
     secondEnd:"2026-10-03T14:20:00+03:00"
   },
   SOCIALS:{
-    math:{academy:"https://kolisnyk-academy.mssg.me/",site:"https://olexanderkolsnyk.github.io/Kolisnyk-Academy/"},
+    math:{telegram:"https://t.me/kolisnyk_academy",tiktok:"https://www.tiktok.com/@kolisnyk_academy",site:"https://olexanderkolsnyk.github.io/Kolisnyk-Academy/",viber:"https://r.mssg.me/m/697bfcc0610fc48495b6ee1d",instagram:"https://www.instagram.com/kolisnyk_academy",youtube:"https://www.youtube.com/@kolisnyk_academy"},
     other:{instagram:"https://www.instagram.com/lessons.4.you?stkn=eWkzbnVybnd5M3U0",site:"https://www.lessons4you.party",tiktok:"https://www.tiktok.com/@lessons.4.you?is_from_webapp=1&sender_device=pc",telegram:"https://t.me/lessons4you"}
   }
 };
@@ -162,7 +162,7 @@ function bindSupport(id){
 function social(label,url){
   return url?`<a class="social" href="${url}" target="_blank" rel="noopener">${label} ↗</a>`:`<span class="social disabled">${label}</span>`;
 }
-document.getElementById("mathSocials").innerHTML=social("Записатися",CONFIG.SOCIALS.math.academy)+social("Сайт академії",CONFIG.SOCIALS.math.site);
+document.getElementById("mathSocials").innerHTML=social("Telegram",CONFIG.SOCIALS.math.telegram)+social("TikTok",CONFIG.SOCIALS.math.tiktok)+social("Сайт",CONFIG.SOCIALS.math.site)+social("Viber",CONFIG.SOCIALS.math.viber)+social("Instagram",CONFIG.SOCIALS.math.instagram)+social("YouTube",CONFIG.SOCIALS.math.youtube);
 document.getElementById("otherSocials").innerHTML=social("Instagram",CONFIG.SOCIALS.other.instagram)+social("Сайт",CONFIG.SOCIALS.other.site)+social("TikTok",CONFIG.SOCIALS.other.tiktok)+social("Telegram",CONFIG.SOCIALS.other.telegram);
 
 function updateSessionStatus(){
