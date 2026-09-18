@@ -16,6 +16,7 @@ button,input,select{font:inherit}button{cursor:pointer}.top{position:sticky;top:
 .schedule{display:grid;gap:9px;margin-top:16px}.schedule div{padding:14px;border:1px solid var(--line);border-radius:14px;background:#fafbfe}.schedule strong{display:block;font-size:18px;margin-bottom:3px}.schedule span{color:var(--muted);font-size:12px;line-height:1.45}.actions{display:flex;flex-direction:column;gap:9px;margin-top:18px}.btn{min-height:48px;border:0;border-radius:13px;padding:13px 17px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:900}.primary{color:#fff;background:linear-gradient(135deg,var(--coral),var(--coral2))}.ghost{color:var(--ink);background:#fff;border:1px solid var(--line)}.soft{color:var(--dark);background:var(--soft);border:1px solid #ffddd2}
 .quick{display:flex;flex-direction:column;gap:10px;margin-top:16px}.quickrow{padding:14px;border:1px solid var(--line);border-radius:14px;background:#fafbfe;display:flex;gap:11px}.quickicon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--soft);color:var(--dark);font-weight:950;flex:0 0 auto}.quickrow b{display:block}.quickrow span{color:var(--muted);font-size:13px;line-height:1.5}.support{margin-top:14px;padding:15px;border:1px solid #ffded4;border-radius:15px;background:#fff8f5}.support p{margin:0 0 11px;color:#5d6778;font-size:14px;line-height:1.55}
 .formgrid{display:grid;gap:13px}.field{display:flex;flex-direction:column;gap:7px}label{font-size:13px;font-weight:850;color:#414b5f}input,select{width:100%;min-height:48px;border:1px solid var(--line);border-radius:12px;padding:12px 13px;outline:none;background:#fff}input:focus,select:focus{border-color:#ffad99;box-shadow:0 0 0 4px rgba(255,120,104,.09)}.notice{margin-top:13px;padding:13px 14px;border:1px solid #f2dda7;border-radius:13px;background:#fff8e8;color:#765d1f;font-size:13px;line-height:1.55}.status{display:none;margin-top:13px;padding:13px 14px;border-radius:13px}.status.show{display:block}.status.err{background:#fff0f0;border:1px solid #ffd2d2;color:#a42d2d}
+.sessionbox{margin-top:18px;padding:16px;border:1px solid #ffdacd;border-radius:16px;background:linear-gradient(135deg,var(--soft),#fffaf8)}.sessionbox strong{display:block;color:var(--dark);font-size:17px;margin-bottom:5px}.sessionbox span{display:block;color:var(--muted);font-size:13px;line-height:1.55}.sessionbox.live{border-color:#bfe5d2;background:var(--greenSoft)}.sessionbox.live strong{color:var(--green)}
 .success{max-width:680px;margin:auto;text-align:center}.successicon{width:72px;height:72px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;background:var(--greenSoft);color:var(--green);font-size:34px;font-weight:950}.success p{color:var(--muted);line-height:1.65}.successdetails{max-width:470px;margin:18px auto 0;padding:15px;border:1px solid var(--line);border-radius:14px;background:#fafbfe;text-align:left;line-height:1.6}
 .prep{padding:20px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#fff8f5)}.prep p{color:var(--muted);line-height:1.6}.socials{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}.social{padding:9px 11px;border:1px solid #ffd8cd;border-radius:10px;background:#fff;color:var(--dark);text-decoration:none;font-size:13px;font-weight:850}.social.disabled{opacity:.4;pointer-events:none}.faq{margin-top:18px;display:flex;flex-direction:column;gap:9px}details{border:1px solid var(--line);border-radius:14px;background:#fff}summary{padding:15px 16px;font-weight:900;cursor:pointer}details p{margin:0;padding:0 16px 15px;color:var(--muted);font-size:14px;line-height:1.6}.login{max-width:580px;margin:auto}.footer{padding:0 16px 36px;color:#8992a2;font-size:12px;display:flex;flex-direction:column;gap:6px}
 @media(min-width:720px){.topin{padding:14px 22px}nav{display:flex}.wrap{padding:36px 22px 64px}.card{padding:30px}.hero,.grid2{grid-template-columns:1.08fr .92fr;gap:22px}.schedule{grid-template-columns:repeat(3,1fr)}.actions{flex-direction:row}.formgrid{grid-template-columns:1fr 1fr}.full{grid-column:1/-1}.prepgrid{grid-template-columns:1fr 1fr}.footer{padding:0 22px 38px;flex-direction:row;justify-content:space-between}}
@@ -41,7 +42,7 @@ button,input,select{font:inherit}button{cursor:pointer}.top{position:sticky;top:
 <div class="count"><strong id="minutes">00</strong><span>хвилин</span></div>
 <div class="count"><strong id="seconds">00</strong><span>секунд</span></div>
 </div></div>
-<div class="schedule"><div><strong>120 хв</strong><span>Українська мова + математика</span></div><div><strong>20 хв</strong><span>Перерва між етапами</span></div><div><strong>120 хв</strong><span>Історія України + англійська</span></div></div>
+<div class="schedule"><div><strong>10:00–12:00</strong><span>Перша сесія: українська мова + математика</span></div><div><strong>12:00–12:20</strong><span>Перерва. Якщо завершиш раніше — відпочиваєш до 12:20</span></div><div><strong>12:20–14:20</strong><span>Друга сесія: історія України + англійська</span></div></div>
 <div class="actions"><button class="btn primary" data-page="register">Зареєструватися</button><button class="btn ghost" data-page="prep">Підготовка з Kolisnyk Academy</button></div>
 </div>
 
@@ -59,9 +60,10 @@ button,input,select{font:inherit}button{cursor:pointer}.top{position:sticky;top:
 <div class="card" style="margin-top:16px">
 <div class="eyebrow">FAQ</div><h2>Короткі відповіді</h2>
 <div class="faq">
-<details><summary>Коли буде пробний мультитест?</summary><p>3 жовтня 2026 року. Точний час початку та дані для входу отримаєш після підтвердження реєстрації.</p></details>
+<details><summary>Коли буде пробний мультитест?</summary><p>3 жовтня 2026 року. Перша сесія починається о 10:00, друга — о 12:20 за київським часом. Дані для входу отримаєш після підтвердження реєстрації.</p></details>
 <details><summary>Які предмети будуть?</summary><p>Українська мова, математика, історія України та англійська мова.</p></details>
-<details><summary>Скільки триватиме тест?</summary><p>Перший етап — 120 хвилин, потім перерва 20 хвилин, після цього другий етап — ще 120 хвилин.</p></details>
+<details><summary>Скільки триватиме тест?</summary><p>Перша сесія триває з 10:00 до 12:00. О 12:00 вона завершується автоматично, після чого триває перерва до 12:20. Якщо завершиш раніше, матимеш довшу перерву. Друга сесія проходить з 12:20 до 14:20.</p></details>
+<details><summary>Що буде, якщо не завершити першу сесію до 12:00?</summary><p>О 12:00 перша сесія завершується автоматично. Якщо учасник не завершив її самостійно вчасно, за цю сесію відображатиметься 0. Дані виконання зберігаються для організатора.</p></details>
 <details><summary>Можна проходити з телефона?</summary><p>Так. Сайт адаптований для смартфона. Але для самого тесту, якщо є можливість, зручніше використовувати ноутбук або комп'ютер.</p></details>
 <details><summary>Що буде після реєстрації?</summary><p>Команда отримає твою заявку. Важливу організаційну інформацію та доступ надішлемо за вказаними контактами.</p></details>
 <details><summary>Що робити, якщо помилився / помилилася в Telegram?</summary><p>Напиши нам у Telegram підтримки та вкажи ім'я, з яким реєструвався / реєструвалася.</p></details>
@@ -118,6 +120,7 @@ button,input,select{font:inherit}button{cursor:pointer}.top{position:sticky;top:
 <section id="login" class="section">
 <div class="card login">
 <div class="eyebrow">3 жовтня 2026</div><h2>Вхід для учасників</h2><p class="lead" style="font-size:16px">Дані для входу отримаєш перед початком пробного мультитесту.</p>
+<div id="sessionStatus" class="sessionbox" aria-live="polite"><strong>Перевіряємо розклад…</strong><span>Час указано за Києвом.</span></div>
 <div class="support"><p><b>Не можеш увійти?</b><br>Напиши нам — допоможемо перевірити доступ.</p><a id="supportLogin" class="btn ghost" href="#" target="_blank" rel="noopener">Написати в Telegram</a></div>
 </div>
 </section>
@@ -128,11 +131,17 @@ button,input,select{font:inherit}button{cursor:pointer}.top{position:sticky;top:
 <script>
 const CONFIG={
   FORM_ENDPOINT:"https://script.google.com/macros/s/AKfycbw0Lj8RtqIamar2h9yXeazFTadYvfIfsTqUpcKcPK1mEi8cV-XqfP97SzwzVKRu-IeN/exec",
-  SUPPORT_TELEGRAM:"",
+  SUPPORT_TELEGRAM:"https://t.me/lessons4you",
   DEADLINE:"2026-10-02T23:59:00+03:00",
+  SESSIONS:{
+    firstStart:"2026-10-03T10:00:00+03:00",
+    firstEnd:"2026-10-03T12:00:00+03:00",
+    secondStart:"2026-10-03T12:20:00+03:00",
+    secondEnd:"2026-10-03T14:20:00+03:00"
+  },
   SOCIALS:{
-    math:{telegram:"",instagram:"",tiktok:""},
-    other:{telegram:"",instagram:"",tiktok:""}
+    math:{academy:"https://kolisnyk-academy.mssg.me/",site:"https://olexanderkolsnyk.github.io/Kolisnyk-Academy/"},
+    other:{instagram:"https://www.instagram.com/lessons.4.you?stkn=eWkzbnVybnd5M3U0",site:"https://www.lessons4you.party",tiktok:"https://www.tiktok.com/@lessons.4.you?is_from_webapp=1&sender_device=pc",telegram:"https://t.me/lessons4you"}
   }
 };
 
@@ -153,8 +162,34 @@ function bindSupport(id){
 function social(label,url){
   return url?`<a class="social" href="${url}" target="_blank" rel="noopener">${label} ↗</a>`:`<span class="social disabled">${label}</span>`;
 }
-document.getElementById("mathSocials").innerHTML=social("Telegram",CONFIG.SOCIALS.math.telegram)+social("Instagram",CONFIG.SOCIALS.math.instagram)+social("TikTok",CONFIG.SOCIALS.math.tiktok);
-document.getElementById("otherSocials").innerHTML=social("Telegram",CONFIG.SOCIALS.other.telegram)+social("Instagram",CONFIG.SOCIALS.other.instagram)+social("TikTok",CONFIG.SOCIALS.other.tiktok);
+document.getElementById("mathSocials").innerHTML=social("Записатися",CONFIG.SOCIALS.math.academy)+social("Сайт академії",CONFIG.SOCIALS.math.site);
+document.getElementById("otherSocials").innerHTML=social("Instagram",CONFIG.SOCIALS.other.instagram)+social("Сайт",CONFIG.SOCIALS.other.site)+social("TikTok",CONFIG.SOCIALS.other.tiktok)+social("Telegram",CONFIG.SOCIALS.other.telegram);
+
+function updateSessionStatus(){
+  const box=document.getElementById("sessionStatus");
+  if(!box)return;
+  const now=Date.now();
+  const s=CONFIG.SESSIONS;
+  const firstStart=new Date(s.firstStart).getTime();
+  const firstEnd=new Date(s.firstEnd).getTime();
+  const secondStart=new Date(s.secondStart).getTime();
+  const secondEnd=new Date(s.secondEnd).getTime();
+  box.classList.remove("live");
+  if(now<firstStart){
+    box.innerHTML="<strong>Перша сесія почнеться о 10:00</strong><span>Увійди завчасно. Час указано за Києвом.</span>";
+  }else if(now<firstEnd){
+    box.classList.add("live");
+    box.innerHTML="<strong>Перша сесія триває до 12:00</strong><span>Заверши її самостійно до 12:00. Після завершення відпочивай до 12:20.</span>";
+  }else if(now<secondStart){
+    box.innerHTML="<strong>Перерва до 12:20</strong><span>Перша сесія вже завершена. Друга почнеться о 12:20.</span>";
+  }else if(now<secondEnd){
+    box.classList.add("live");
+    box.innerHTML="<strong>Друга сесія триває до 14:20</strong><span>Історія України + англійська мова.</span>";
+  }else{
+    box.innerHTML="<strong>Пробний мультитест завершено</strong><span>Обидві сесії вже закінчилися.</span>";
+  }
+}
+updateSessionStatus();setInterval(updateSessionStatus,30000);
 
 function telegramValid(v){return /^@[A-Za-z0-9_]{5,32}$/.test(v.trim())}
 
