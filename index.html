@@ -139,6 +139,7 @@ button,input,select{font:inherit}button{cursor:pointer}.top{position:sticky;top:
 
 <script>
 const CONFIG={
+  REGISTRATION_OPEN:true,
   FORM_ENDPOINT:"https://script.google.com/macros/s/AKfycbw0Lj8RtqIamar2h9yXeazFTadYvfIfsTqUpcKcPK1mEi8cV-XqfP97SzwzVKRu-IeN/exec",
   SUPPORT_TELEGRAM:"https://t.me/kolisnyk_academy",
   DEADLINE:"2026-10-02T23:59:00+03:00",
@@ -233,13 +234,32 @@ function showPage(id,options){
 document.querySelectorAll("[data-page]").forEach(button=>button.addEventListener("click",()=>{
   showPage(button.dataset.page,{prepTarget:button.dataset.prepTarget||""});
 }));
-document.getElementById("homeLogo").addEventListener("click",()=>showPage("home"));
+
+let logoClickTimes=[];
+document.getElementById("homeLogo").addEventListener("click",()=>{
+  showPage("home");
+  const now=Date.now();
+  logoClickTimes=logoClickTimes.filter(time=>now-time<2500);
+  logoClickTimes.push(now);
+  if(logoClickTimes.length>=7){
+    logoClickTimes=[];
+    location.assign("admin.html");
+  }
+});
+document.addEventListener("keydown",event=>{
+  if(event.ctrlKey&&event.shiftKey&&event.key.toLowerCase()==="k"){
+    event.preventDefault();
+    location.assign("admin.html");
+  }
+});
 
 function bindSupport(id){
   const el=document.getElementById(id);
   if(!el)return;
-  if(!CONFIG.SUPPORT_TELEGRAM){el.style.display="none";return}
-  el.href=CONFIG.SUPPORT_TELEGRAM;
+  const supportUrl=safePublicUrl(CONFIG.SUPPORT_TELEGRAM);
+  if(!supportUrl){el.style.display="none";return}
+  el.style.display="";
+  el.href=supportUrl;
   el.dataset.trackEvent="support_click";
   el.dataset.target="kolisnyk_academy_telegram";
 }
@@ -257,24 +277,65 @@ function icon(name){
   };
   return icons[name]||icons.site;
 }
-function social(iconName,url,label,eventName,target){
-  if(!url)return "";
-  return '<a class="social" href="'+url+'" target="_blank" rel="noopener" aria-label="'+label+'" title="'+label+'" data-track-event="'+eventName+'" data-target="'+target+'">'+icon(iconName)+'<span class="sr-only">'+label+'</span></a>';
+function safePublicUrl(value){
+  if(!value)return "";
+  try{const url=new URL(value,location.href);return url.protocol==="https:"?url.href:""}catch(_){return ""}
 }
-const k=CONFIG.SOCIALS.kolisnyk;
-document.getElementById("mathSocials").innerHTML=
-  social("telegram",k.telegram,"Telegram Kolisnyk Academy","kolisnyk_telegram_click","telegram")+
-  social("tiktok",k.tiktok,"TikTok Kolisnyk Academy","kolisnyk_tiktok_click","tiktok")+
-  social("site",k.site,"Сайт Kolisnyk Academy","preparation_open","kolisnyk_site")+
-  social("viber",k.viber,"Viber Kolisnyk Academy","preparation_open","kolisnyk_viber")+
-  social("instagram",k.instagram,"Instagram Kolisnyk Academy","kolisnyk_instagram_click","instagram")+
-  social("youtube",k.youtube,"YouTube Kolisnyk Academy","preparation_open","kolisnyk_youtube");
-const l=CONFIG.SOCIALS.lessons4you;
-document.getElementById("otherSocials").innerHTML=
-  social("telegram",l.telegram,"Telegram Lessons for You","lessons4you_telegram_click","telegram")+
-  social("tiktok",l.tiktok,"TikTok Lessons for You","lessons4you_tiktok_click","tiktok")+
-  social("site",l.site,"Сайт Lessons for You","preparation_open","lessons4you_site")+
-  social("instagram",l.instagram,"Instagram Lessons for You","lessons4you_instagram_click","instagram");
+function social(iconName,url,label,eventName,target){
+  const safeUrl=safePublicUrl(url);
+  if(!safeUrl)return "";
+  return '<a class="social" href="'+safeUrl+'" target="_blank" rel="noopener" aria-label="'+label+'" title="'+label+'" data-track-event="'+eventName+'" data-target="'+target+'">'+icon(iconName)+'<span class="sr-only">'+label+'</span></a>';
+}
+function renderPublicLinks(){
+  ["supportHome","supportRegister","supportSuccess","supportPrep","supportLogin","mobileSupport"].forEach(bindSupport);
+  const k=CONFIG.SOCIALS.kolisnyk;
+  document.getElementById("mathSocials").innerHTML=
+    social("telegram",k.telegram,"Telegram Kolisnyk Academy","kolisnyk_telegram_click","telegram")+
+    social("tiktok",k.tiktok,"TikTok Kolisnyk Academy","kolisnyk_tiktok_click","tiktok")+
+    social("site",k.site,"Сайт Kolisnyk Academy","preparation_open","kolisnyk_site")+
+    social("viber",k.viber,"Viber Kolisnyk Academy","preparation_open","kolisnyk_viber")+
+    social("instagram",k.instagram,"Instagram Kolisnyk Academy","kolisnyk_instagram_click","instagram")+
+    social("youtube",k.youtube,"YouTube Kolisnyk Academy","preparation_open","kolisnyk_youtube");
+  const l=CONFIG.SOCIALS.lessons4you;
+  document.getElementById("otherSocials").innerHTML=
+    social("telegram",l.telegram,"Telegram Lessons for You","lessons4you_telegram_click","telegram")+
+    social("tiktok",l.tiktok,"TikTok Lessons for You","lessons4you_tiktok_click","tiktok")+
+    social("site",l.site,"Сайт Lessons for You","preparation_open","lessons4you_site")+
+    social("instagram",l.instagram,"Instagram Lessons for You","lessons4you_instagram_click","instagram");
+}
+function applyPublicConfig(config){
+  if(!config||typeof config!=="object")return;
+  if(config.RegistrationOpen==="true"||config.RegistrationOpen==="false")CONFIG.REGISTRATION_OPEN=config.RegistrationOpen==="true";
+  if(config.RegistrationDeadline)CONFIG.DEADLINE=config.RegistrationDeadline;
+  if(config.SupportTelegram)CONFIG.SUPPORT_TELEGRAM=config.SupportTelegram;
+  const mappings=[
+    ["KolisnykTelegram",CONFIG.SOCIALS.kolisnyk,"telegram"],
+    ["KolisnykInstagram",CONFIG.SOCIALS.kolisnyk,"instagram"],
+    ["KolisnykTikTok",CONFIG.SOCIALS.kolisnyk,"tiktok"],
+    ["KolisnykSite",CONFIG.SOCIALS.kolisnyk,"site"],
+    ["KolisnykViber",CONFIG.SOCIALS.kolisnyk,"viber"],
+    ["KolisnykYouTube",CONFIG.SOCIALS.kolisnyk,"youtube"],
+    ["Lessons4YouTelegram",CONFIG.SOCIALS.lessons4you,"telegram"],
+    ["Lessons4YouInstagram",CONFIG.SOCIALS.lessons4you,"instagram"],
+    ["Lessons4YouTikTok",CONFIG.SOCIALS.lessons4you,"tiktok"],
+    ["Lessons4YouSite",CONFIG.SOCIALS.lessons4you,"site"]
+  ];
+  mappings.forEach(([setting,group,key])=>{if(config[setting])group[key]=config[setting]});
+}
+async function loadPublicConfig(){
+  try{
+    const response=await fetch(CONFIG.FORM_ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"publicConfig"})});
+    const data=await response.json();
+    if(data.ok){
+      applyPublicConfig(data.config);
+      renderPublicLinks();
+      updateSessionStatus();
+      updateCountdown();
+    }
+  }catch(_){}
+}
+renderPublicLinks();
+loadPublicConfig();
 
 function registrationId(){return localStorage.getItem(STORAGE_KEYS.registrationId)||""}
 function eventPayload(eventName,category,target){
@@ -335,7 +396,7 @@ updateSessionStatus();setInterval(updateSessionStatus,30000);
 function telegramValid(value){return /^@[A-Za-z0-9_]{5,32}$/.test(value.trim())}
 
 function updateCountdown(){
-  const diff=Math.max(0,new Date(CONFIG.DEADLINE).getTime()-Date.now());
+  const diff=CONFIG.REGISTRATION_OPEN?Math.max(0,new Date(CONFIG.DEADLINE).getTime()-Date.now()):0;
   if(diff===0){
     document.getElementById("countdown").innerHTML='<div class="count" style="grid-column:1/-1"><strong style="font-size:16px">Реєстрацію завершено</strong></div>';
     document.querySelectorAll('[data-page="register"]').forEach(button=>{button.disabled=true;if(!button.closest(".mobile-nav"))button.textContent="Реєстрацію завершено"});
@@ -397,4 +458,6 @@ document.getElementById("registrationForm").addEventListener("submit",async even
 </script>
 </body>
 </html>
+
+
 
