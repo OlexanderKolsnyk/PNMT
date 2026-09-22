@@ -4,44 +4,30 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Пробний мультитест — Kolisnyk Academy × Lessons for You</title>
-<meta name="description" content="Пробний мультитест від Kolisnyk Academy × Lessons for You. 3 жовтня 2026.">
-<meta name="theme-color" content="#ff876f">
-<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="%23ff7868"/><stop offset="1" stop-color="%23ffa07f"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(%23g)"/><text x="32" y="40" font-family="Arial" font-size="25" font-weight="800" text-anchor="middle" fill="white">PM</text></svg>'>
-<style>
-:root{--bg:#f8f9fb;--card:#fff;--ink:#172033;--muted:#687386;--line:#e6e9ef;--coral:#ff7868;--coral2:#ff9a7c;--dark:#c95448;--soft:#fff3ef;--green:#178b5e;--greenSoft:#eefaf4;--shadow:0 16px 44px rgba(23,32,51,.07)}
-*{box-sizing:border-box}html,body{overflow-x:hidden}body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:radial-gradient(circle at 0 0,rgba(255,154,124,.13),transparent 30%),var(--bg);padding-bottom:calc(74px + env(safe-area-inset-bottom))}
-button,input,select{font:inherit}button{cursor:pointer}.top{position:sticky;top:0;z-index:20;background:rgba(248,249,251,.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}.topin,.wrap,.footer{width:min(1180px,100%);margin:auto}.topin{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{border:0;background:none;padding:0;display:flex;align-items:center;gap:10px;text-align:left;min-width:0}.logo{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--coral),var(--coral2));color:#fff;font-weight:950;flex:0 0 auto}.brand strong{display:block;font-size:16px}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:3px;white-space:normal}.desktop-nav{display:none;gap:5px}.desktop-nav button{border:0;background:none;padding:9px 11px;border-radius:11px;color:var(--muted);font-weight:800}.desktop-nav button.active,.desktop-nav button:hover{background:#fff;color:var(--ink)}
-.mobile-nav{position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;grid-template-columns:repeat(4,1fr);padding:7px max(8px,env(safe-area-inset-left)) calc(7px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-right));border-top:1px solid var(--line);background:rgba(255,255,255,.96);backdrop-filter:blur(16px);box-shadow:0 -8px 28px rgba(23,32,51,.08)}.mobile-nav button,.mobile-nav a{min-width:0;min-height:48px;border:0;border-radius:12px;background:none;color:var(--muted);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:11px;font-weight:850;padding:7px 3px;text-align:center}.mobile-nav button.active{background:var(--soft);color:var(--dark)}
-.wrap{padding:24px 16px 56px}.section{display:none}.section.active{display:block}.card{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:20px}.hero,.grid2,.prepgrid{display:grid;gap:16px}.eyebrow{font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--dark);font-weight:950}h1{font-size:clamp(34px,10.5vw,64px);line-height:.99;letter-spacing:-.045em;margin:11px 0 15px}h2{font-size:clamp(26px,7vw,32px);margin:0 0 10px;letter-spacing:-.025em}.lead{margin:0;color:var(--muted);font-size:16px;line-height:1.65}.collabline{margin:16px 0 0;padding:13px 14px;border:1px solid #ffded4;border-radius:14px;background:#fff8f5;color:#5d6778;font-size:13px;line-height:1.6}.collabline b{color:var(--ink)}
-.datebox{margin-top:20px;padding:15px 16px;border:1px solid #ffdacd;border-radius:16px;background:linear-gradient(135deg,var(--soft),#fffaf8)}.datebox b{display:block;color:var(--dark);font-size:20px;margin-top:4px}.countdown{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}.count{min-width:0;padding:11px 3px;border:1px solid #ffded3;border-radius:13px;background:#fff;text-align:center}.count strong{display:block;font-size:clamp(18px,6vw,22px)}.count span{display:block;margin-top:4px;color:var(--muted);font-size:9px;font-weight:800}
-.schedule{display:grid;gap:9px;margin-top:16px}.schedule div{padding:14px;border:1px solid var(--line);border-radius:14px;background:#fafbfe}.schedule strong{display:block;font-size:18px;margin-bottom:3px}.schedule span{color:var(--muted);font-size:12px;line-height:1.45}.actions{display:flex;flex-direction:column;gap:9px;margin-top:18px}.btn{min-height:48px;border:0;border-radius:13px;padding:13px 17px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:900;text-align:center}.primary{color:#fff;background:linear-gradient(135deg,var(--coral),var(--coral2))}.ghost{color:var(--ink);background:#fff;border:1px solid var(--line)}.soft{color:var(--dark);background:var(--soft);border:1px solid #ffddd2}
-.quick{display:flex;flex-direction:column;gap:10px;margin-top:16px}.quickrow{padding:14px;border:1px solid var(--line);border-radius:14px;background:#fafbfe;display:flex;gap:11px}.quickicon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--soft);color:var(--dark);font-weight:950;flex:0 0 auto}.quickrow b{display:block}.quickrow span{color:var(--muted);font-size:13px;line-height:1.5}.support{margin-top:14px;padding:15px;border:1px solid #ffded4;border-radius:15px;background:#fff8f5}.support p{margin:0 0 11px;color:#5d6778;font-size:14px;line-height:1.55}
-.formgrid{display:grid;gap:13px}.field{display:flex;flex-direction:column;gap:7px}label{font-size:13px;font-weight:850;color:#414b5f}input,select{width:100%;min-height:48px;border:1px solid var(--line);border-radius:12px;padding:12px 13px;outline:none;background:#fff}input:focus,select:focus{border-color:#ffad99;box-shadow:0 0 0 4px rgba(255,120,104,.09)}.notice{margin-top:13px;padding:13px 14px;border:1px solid #f2dda7;border-radius:13px;background:#fff8e8;color:#765d1f;font-size:13px;line-height:1.55}.status{display:none;margin-top:13px;padding:13px 14px;border-radius:13px}.status.show{display:block}.status.err{background:#fff0f0;border:1px solid #ffd2d2;color:#a42d2d}
-.sessionbox{margin-top:18px;padding:16px;border:1px solid #ffdacd;border-radius:16px;background:linear-gradient(135deg,var(--soft),#fffaf8)}.sessionbox strong{display:block;color:var(--dark);font-size:17px;margin-bottom:5px}.sessionbox span{display:block;color:var(--muted);font-size:13px;line-height:1.55}.sessionbox.live{border-color:#bfe5d2;background:var(--greenSoft)}.sessionbox.live strong{color:var(--green)}
-.success{max-width:680px;margin:auto;text-align:center}.successicon{width:72px;height:72px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;background:var(--greenSoft);color:var(--green);font-size:34px;font-weight:950}.success p{color:var(--muted);line-height:1.65}.successdetails{max-width:470px;margin:18px auto 0;padding:15px;border:1px solid var(--line);border-radius:14px;background:#fafbfe;text-align:left;line-height:1.6}
-.prep{padding:20px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#fff8f5);scroll-margin-top:90px}.prep p{color:var(--muted);line-height:1.6}.prep-brand{display:inline-flex;margin-top:2px;padding:5px 8px;border-radius:999px;background:var(--soft);color:var(--dark);font-size:11px;font-weight:900}.socials{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}.social{width:48px;height:48px;padding:0;border:1px solid #ffd8cd;border-radius:14px;background:#fff;color:var(--dark);display:inline-flex;align-items:center;justify-content:center;text-decoration:none;transition:transform .15s ease,background .15s ease}.social:hover,.social:focus-visible{transform:translateY(-2px);background:var(--soft);outline:2px solid rgba(255,120,104,.22);outline-offset:2px}.social svg{width:23px;height:23px;display:block}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.faq{margin-top:18px;display:flex;flex-direction:column;gap:9px}details{border:1px solid var(--line);border-radius:14px;background:#fff}summary{padding:15px 16px;font-weight:900;cursor:pointer}details p{margin:0;padding:0 16px 15px;color:var(--muted);font-size:14px;line-height:1.6}.login{max-width:580px;margin:auto}.footer{padding:0 16px 36px;color:#8992a2;font-size:12px;display:flex;flex-direction:column;gap:6px}
-@media(min-width:720px){body{padding-bottom:0}.topin{padding:14px 22px}.desktop-nav{display:flex}.mobile-nav{display:none}.wrap{padding:36px 22px 64px}.card{padding:30px}.hero,.grid2{grid-template-columns:1.08fr .92fr;gap:22px}.schedule{grid-template-columns:repeat(3,1fr)}.actions{flex-direction:row;flex-wrap:wrap}.formgrid{grid-template-columns:1fr 1fr}.full{grid-column:1/-1}.prepgrid{grid-template-columns:1fr 1fr}.footer{padding:0 22px 38px;flex-direction:row;justify-content:space-between}}
-</style>
+<meta name="description" content="Пробний НМТ у форматі, наближеному до реального тестувальника: реєстрація, персональний доступ, 2 етапи, 20-хвилинна перерва та 4 предмети.">
+<link rel="stylesheet" href="assets/styles.css?v=41">
 </head>
 <body>
+
 <header class="top"><div class="topin">
-<button class="brand" id="homeLogo"><span class="logo">PM</span><span><strong>Пробний мультитест</strong><small>Kolisnyk Academy × Lessons for You</small></span></button>
-<nav class="desktop-nav" aria-label="Основна навігація"><button data-page="home" class="active">Головна</button><button data-page="register">Реєстрація</button><button data-page="prep">Підготовка</button><button data-page="login">Вхід</button></nav>
+<button class="brand" id="brandHome"><span class="logo">PM</span><span><strong>Пробний мультитест</strong><small>Kolisnyk Academy × Lessons for You</small></span></button>
+<nav class="desktop-nav" aria-label="Основна навігація"><button data-nav="home" class="active">Головна</button><button data-nav="register">Реєстрація</button><button data-nav="tutors">Підготовка</button><button data-nav="login">Вхід</button></nav>
 </div></header>
 
 <nav class="mobile-nav" aria-label="Мобільна навігація">
-<button data-page="home" class="active">Головна</button>
-<button data-page="register">Реєстрація</button>
-<button data-page="prep">Підготовка</button>
-<a id="mobileSupport" href="#" target="_blank" rel="noopener">Допомога</a>
+<button data-nav="home" class="active">Головна</button>
+<button data-nav="register">Реєстрація</button>
+<button data-nav="tutors">Підготовка</button>
+<a id="mobileSupport" href="https://t.me/kolisnyk_academy" target="_blank" rel="noopener">Допомога</a>
 </nav>
 
 <main class="wrap">
+
 <section id="home" class="section active">
 <div class="hero">
 <div class="card">
-<div class="eyebrow">3 жовтня 2026</div>
-<h1>Пробний мультитест перед справжнім НМТ</h1>
+<div class="eyebrow">Пробний мультитест 2026</div>
+<h1>НМТ буде 3 жовтня о 10:00</h1>
 <p class="lead">Перевір знання, відчуй темп тестування та спокійніше зайди в реальний іспит. Чотири предмети, два етапи та формат, наближений до НМТ.</p>
 <div class="collabline"><b>Пробний мультитест від Kolisnyk Academy × Lessons for You.</b><br>Математика — Kolisnyk Academy. Українська мова, історія України та англійська — Lessons for You.</div>
 <div class="datebox"><span>Реєстрація відкрита до</span><b>2 жовтня 2026 · 23:59</b>
@@ -52,7 +38,7 @@ button,input,select{font:inherit}button{cursor:pointer}.top{position:sticky;top:
 <div class="count"><strong id="seconds">00</strong><span>секунд</span></div>
 </div></div>
 <div class="schedule"><div><strong>10:00–12:00</strong><span>Перша сесія: українська мова + математика</span></div><div><strong>12:00–12:20</strong><span>Перерва. Якщо завершиш раніше — відпочиваєш до 12:20</span></div><div><strong>12:20–14:20</strong><span>Друга сесія: історія України + англійська</span></div></div>
-<div class="actions"><button class="btn primary" data-page="register">Зареєструватися</button><button class="btn ghost" data-page="prep" data-prep-target="mathPrep" data-track-event="preparation_open" data-target="kolisnyk_academy">Підготовка: Kolisnyk Academy</button><button class="btn ghost" data-page="prep" data-prep-target="otherPrep" data-track-event="preparation_open" data-target="lessons_for_you">Підготовка: Lessons for You</button></div>
+<div class="actions"><button class="btn primary" data-nav="register">Зареєструватися</button><button class="btn ghost" data-nav="tutors" data-prep-target="mathPrep"  >Підготовка: Kolisnyk Academy</button><button class="btn ghost" data-nav="tutors" data-prep-target="otherPrep"  >Підготовка: Lessons for You</button></div>
 </div>
 
 <div class="card">
@@ -62,7 +48,7 @@ button,input,select{font:inherit}button{cursor:pointer}.top{position:sticky;top:
 <div class="quickrow"><span class="quickicon">2</span><div><b>Дочекатися підтвердження</b><span>Усю важливу інформацію надішлемо за вказаними контактами.</span></div></div>
 <div class="quickrow"><span class="quickicon">3</span><div><b>Увійти 3 жовтня</b><span>Для кожного учасника буде персональний доступ.</span></div></div>
 </div>
-<div class="support"><p><b>Є питання або щось не працює?</b><br>Напиши нам у Telegram — допоможемо.</p><a id="supportHome" class="btn soft" href="#" target="_blank" rel="noopener">Написати в Telegram</a></div>
+<div class="support"><p><b>Є питання або щось не працює?</b><br>Напиши нам у Telegram — допоможемо.</p><a id="supportHome" class="btn soft" href="https://t.me/kolisnyk_academy" target="_blank" rel="noopener">Написати в Telegram</a></div>
 </div>
 </div>
 
@@ -93,6 +79,7 @@ button,input,select{font:inherit}button{cursor:pointer}.top{position:sticky;top:
 <div class="field full"><label>Місто</label><input id="regCity" autocomplete="address-level2" required placeholder="Київ"></div>
 </div>
 <div class="notice"><b>Перевір Telegram перед відправленням.</b> Вкажи актуальний <b>@username</b>. Якщо username неправильний або з тобою неможливо зв'язатися, ми не зможемо підтвердити участь та надіслати важливу інформацію.</div>
+<div class="notice wait-notice"><b>Після надсилання форми не виходьте із сайту.</b> Дочекайтеся, поки система згенерує й покаже ваші індивідуальні логін і пароль. Це може тривати кілька секунд.</div>
 <div class="actions"><button class="btn primary" type="submit">Надіслати заявку</button></div>
 <div id="registrationStatus" class="status"></div>
 </form>
@@ -101,363 +88,246 @@ button,input,select{font:inherit}button{cursor:pointer}.top{position:sticky;top:
 <div class="card">
 <div class="eyebrow">Підтримка</div><h2>Якщо виникло питання</h2>
 <p class="lead" style="font-size:16px">Якщо форма не надсилається, не приходить підтвердження або ти помилився / помилилася в контактах — напиши нам.</p>
-<div class="support"><p>Найшвидший спосіб зв'язку — Telegram.</p><a id="supportRegister" class="btn primary" href="#" target="_blank" rel="noopener">Написати в Telegram</a></div>
+<div class="support"><p>Найшвидший спосіб зв'язку — Telegram.</p><a id="supportRegister" class="btn primary" href="https://t.me/kolisnyk_academy" target="_blank" rel="noopener">Написати в Telegram</a></div>
 </div>
 </div>
 </section>
 
-<section id="success" class="section">
-<div class="card success">
-<div class="successicon">✓</div><div class="eyebrow">Готово</div><h2 style="margin-top:8px">Заявку отримано</h2>
-<p>Ти зареєструвався / зареєструвалася на пробний мультитест. Перевір, чи правильно вказав / вказала Telegram — саме там ми зможемо швидко зв'язатися з тобою.</p>
-<div class="successdetails"><b>Що далі:</b><br>1. Збережи дату — 3 жовтня 2026.<br>2. Слідкуй за повідомленнями у Telegram.<br>3. Перед тестом отримаєш дані для входу.</div>
-<div class="actions"><button class="btn primary" data-page="prep" data-track-event="preparation_open" data-target="all_directions">Перейти до підготовки</button><button class="btn ghost" data-page="home">На головну</button><a id="supportSuccess" class="btn ghost" href="#" target="_blank" rel="noopener">Є питання?</a></div>
+<section id="login" class="section">
+<div class="card login">
+<div class="eyebrow">3 жовтня 2026</div><h2>Вхід для учасників</h2><p class="lead" style="font-size:16px">Вхід для учасників буде доступний з 09:00 3 жовтня. Увійди завчасно — тест починається о 10:00.</p>
+<div id="sessionStatus" class="sessionbox" aria-live="polite"><strong>Вхід для зареєстрованих учасників</strong><span>Використай персональні логін і пароль, отримані після реєстрації.</span></div>
+  <form id="loginForm" style="margin-top:18px">
+    <div class="field"><label>Логін</label><input id="loginInput" required autocomplete="username" placeholder="Введіть логін"></div>
+    <div class="field" style="margin-top:14px"><label>Пароль</label><input id="passwordInput" type="password" required autocomplete="current-password" placeholder="Введіть пароль"></div>
+    <div class="actions"><button class="btn primary" type="submit">Увійти</button></div>
+    <div id="loginStatus" class="status"></div>
+  </form>
+<div class="support"><p><b>Не можеш увійти?</b><br>Напиши нам — допоможемо перевірити доступ.</p><a id="supportLogin" class="btn ghost" href="https://t.me/kolisnyk_academy" target="_blank" rel="noopener">Написати в Telegram</a></div>
 </div>
 </section>
 
-<section id="prep" class="section">
+<section id="lobby" class="section">
+  <div class="panel">
+    <div class="eyebrow">Перед початком</div>
+    <h2>Перевірте дані та правила</h2>
+    <div class="lobby-grid">
+      <div class="identity">
+        <small>Учасник / учасниця</small>
+        <strong id="lobbyName">Учасник / учасниця</strong>
+        <div style="margin-top:18px;color:var(--muted)">Пробний НМТ від Kolisnyk Academy × Lessons for You</div>
+        <div style="font-size:22px;font-weight:950;margin-top:4px">3 жовтня 2026</div>
+      </div>
+      <div>
+        <div class="info-band">Тест проходить у два етапи. У межах одного етапу можна самостійно перемикатися між двома предметами. Після завершення першого етапу повернутися до української мови та математики неможливо.</div>
+        <div class="rules">
+          <div class="rule"><i>1</i><span>На перший етап відведено 120 хвилин: українська мова + математика.</span></div>
+          <div class="rule"><i>2</i><span>Кожну відповідь потрібно окремо зберегти кнопкою «Зберегти відповідь».</span></div>
+          <div class="rule"><i>3</i><span>Після першого етапу — 20 хвилин перерви.</span></div>
+          <div class="rule"><i>4</i><span>Другий етап — 120 хвилин: історія України + англійська мова.</span></div>
+        </div>
+        <label class="checkline"><input id="rulesAgree" type="checkbox"><span>Я ознайомився / ознайомилася з правилами пробного тесту й розумію, що після завершення етапу повернутися до нього буде неможливо.</span></label>
+        <div class="exam-start">
+  
+  <h3>Початок тестування</h3>
+  <p>Перша сесія починається о 10:00, друга — о 12:20 за київським часом.</p>
+  <div class="actions">
+    <button id="startTestBtn" class="btn primary">Почати тестування</button>
+    <button id="startStage2TestBtn" hidden data-test-control class="btn ghost" type="button">Одразу відкрити другу сесію</button>
+    <button id="resetProgressBtn" hidden data-test-control class="btn soft" type="button">Скинути мій прогрес</button>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="exam" class="section">
+  <div class="exam-shell">
+    <div class="exam-top">
+      <div class="exam-tabs">
+        <button class="exam-tab active" data-examtab="examview">Іспит</button>
+        <button class="exam-tab" data-examtab="reference">Довідкові матеріали</button>
+        <button class="exam-tab" data-examtab="instruction">Інструкція</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <button id="timerToggle" class="timer timer-toggle" type="button" aria-pressed="false" title="Приховати таймер">⏱ <span id="timerText">02:00:00</span><span id="timerHiddenLabel" class="hide">Показати таймер</span></button>
+        <button id="finishStageBtn" class="btn btn-primary">Завершити роботу над тестом</button>
+      </div>
+    </div>
+
+    <div id="examview" class="exam-view">
+      <div class="exam-grid">
+        <aside class="side-left">
+          <h3 style="margin-top:0">Розклад</h3>
+          <div class="schedule-item"><span class="schedule-num">1</span><div><b>1 етап — 10:00–12:00</b><span>Українська мова 2026 + математика 2026</span></div></div>
+          <div class="schedule-item"><span class="schedule-num">2</span><div><b>Перерва — до 12:20</b><span>Повернутися до першого етапу неможливо.</span></div></div>
+          <div class="schedule-item"><span class="schedule-num">3</span><div><b>2 етап — 12:20–14:20</b><span>Історія України 2026 + англійська мова 2024</span></div></div>
+          <div class="info-band" style="margin-top:15px;font-size:12px">У межах активного етапу можна перемикатися між двома предметами й самостійно розподіляти час.</div>
+        </aside>
+
+        <main class="exam-main">
+          <div class="subject-tabs">
+            <button class="subject-tab active" data-subject="ukrainian">Українська мова</button>
+            <button class="subject-tab" data-subject="math">Математика</button>
+            <button class="subject-tab" data-subject="history" disabled>Історія України</button>
+            <button class="subject-tab" data-subject="english" disabled>Англійська мова</button>
+          </div>
+
+          <div class="qhead">
+            <h3 id="questionTitle">Завдання 1</h3>
+            <div class="q-actions"><span class="pill" id="typePill">Вибір однієї відповіді</span></div>
+          </div>
+
+          <div id="questionContent"></div>
+
+          <div class="save-row">
+            <button id="saveAnswerBtn" class="btn btn-primary">Зберегти відповідь</button>
+            <span id="savedMessage" class="saved">✓ Відповідь збережено</span>
+          </div>
+        </main>
+
+        <aside class="side-right">
+          <h3>Завдання</h3>
+          <div id="palette" class="palette"></div>
+          <div class="legend"><span><i class="dot"></i>Відповідь є</span><span><i class="dot visited"></i>Переглянуто</span><span><i class="dot gray"></i>Не відкрито</span></div>
+        </aside>
+      </div>
+    </div>
+
+    <div id="reference" class="reference-view">
+      <div class="exam-main">
+        <div class="eyebrow">Математика</div>
+        <h2>Довідкові матеріали</h2>
+        <p class="sub">Офіційний довідник формул на 3 сторінки: алгебра, аналіз, тригонометрія, геометрія, координати та вектори.</p>
+        <div class="reference-pdf">
+          <div class="reference-pages" aria-label="Три сторінки довідкових матеріалів"><img src="formuli-page-1.png" alt="Довідкові матеріали, сторінка 1"><img src="formuli-page-2.png" alt="Довідкові матеріали, сторінка 2" loading="lazy"><img src="formuli-page-3.png" alt="Довідкові матеріали, сторінка 3" loading="lazy"></div>
+          <div class="actions"><a class="btn btn-ghost" href="formuli.pdf" target="_blank" rel="noopener">Відкрити PDF на весь екран</a><a class="btn btn-soft" href="formuli.pdf" download>Завантажити PDF</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="instruction" class="instruction-view">
+      <div class="exam-main">
+        <div class="eyebrow">Як працювати із тестом</div>
+        <h2>Інструкція</h2>
+        <div class="instruction-intro">Перед початком переконайтеся, що пристрій підключений до живлення, інтернет працює стабільно, а браузер не перебуває в режимі приватного перегляду.</div>
+        <div class="instruction-list">
+          <div class="instruction-item"><b>1. Два етапи.</b> Перший етап триває 120 хвилин і містить українську мову та математику. Після перерви відкривається другий етап — історія України та англійська мова, також на 120 хвилин.</div>
+          <div class="instruction-item"><b>2. Перемикання між предметами.</b> У межах активного етапу можна вільно перемикатися між двома доступними предметами й самостійно розподіляти час.</div>
+          <div class="instruction-item"><b>3. Навігація завданнями.</b> Використовуйте номери на панелі «Завдання». Кораловий номер означає збережену відповідь, сірий — переглянуте завдання без збереженої відповіді.</div>
+          <div class="instruction-item"><b>4. Збереження відповіді.</b> Самого вибору варіанта недостатньо. Для кожного завдання обов'язково натисніть «Зберегти відповідь». Лише після цього відповідь зараховується.</div>
+          <div class="instruction-item"><b>5. Зміна відповіді.</b> До завершення активного етапу можна повернутися до завдання, вибрати інший варіант і повторно натиснути «Зберегти відповідь».</div>
+          <div class="instruction-item"><b>6. Завдання на відповідність.</b> Кожну літеру можна використати лише один раз. Якщо варіант уже обрано в іншому рядку, система не дозволить вибрати його повторно.</div>
+          <div class="instruction-item"><b>7. Таймер.</b> Час продовжує відраховуватися, навіть якщо таймер приховано. Перед завершенням етапу система покаже попередження за 10, 5 та 1 хвилину.</div>
+          <div class="instruction-item"><b>8. Довідкові матеріали.</b> PDF із математичними формулами доступний у вкладці «Довідкові матеріали». Повернутися до завдання можна вкладкою «Іспит».</div>
+          <div class="instruction-item"><b>9. Перезавантаження сторінки.</b> Збережені відповіді, активний етап, таймер і сеанс входу відновляться автоматично. Незбережений вибір поточного завдання відновлюватися не буде.</div>
+          <div class="instruction-item"><b>10. Завершення.</b> Натисніть «Завершити роботу над тестом». Система покаже номери завдань без збережених відповідей і попросить підтвердження. Після підтвердження повернутися до завершеного етапу неможливо.</div>
+          <div class="instruction-item"><b>11. Якщо виникла проблема.</b> Не закривайте вкладку одразу. Спочатку спробуйте один раз перезавантажити сторінку. Якщо проблема залишилася, зробіть знімок екрана й зверніться до організатора.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tutors" class="section">
 <div class="card">
 <div class="eyebrow">Два напрями підготовки</div><h2>Підготовка до НМТ</h2><p class="lead" style="font-size:16px">Обери команду за потрібними предметами. Це два окремі освітні напрями.</p>
 <div class="prepgrid">
 <div class="prep" id="mathPrep"><div style="font-size:30px">🧮</div><span class="prep-brand">Kolisnyk Academy</span><h3>Математика</h3><p>Kolisnyk Academy проводить підготовку тільки з математики.</p><div class="socials" id="mathSocials" aria-label="Контакти Kolisnyk Academy"></div></div>
 <div class="prep" id="otherPrep"><div style="font-size:30px">📚</div><span class="prep-brand">Lessons for You</span><h3>Українська + історія + англійська</h3><p>Lessons for You проводить підготовку з української мови, історії України та англійської.</p><div class="socials" id="otherSocials" aria-label="Контакти Lessons for You"></div></div>
 </div>
-<div class="support"><p><b>Не знаєш, кого обрати?</b> Напиши нам у Telegram — підкажемо.</p><a id="supportPrep" class="btn soft" href="#" target="_blank" rel="noopener">Поставити питання</a></div>
+<div class="support"><p><b>Не знаєш, кого обрати?</b> Напиши нам у Telegram — підкажемо.</p><a id="supportPrep" class="btn soft" href="https://t.me/kolisnyk_academy" target="_blank" rel="noopener">Поставити питання</a></div>
 </div>
 </section>
 
-<section id="login" class="section">
-<div class="card login">
-<div class="eyebrow">3 жовтня 2026</div><h2>Вхід для учасників</h2><p class="lead" style="font-size:16px">Дані для входу отримаєш перед початком пробного мультитесту.</p>
-<div id="sessionStatus" class="sessionbox" aria-live="polite"><strong>Перевіряємо розклад…</strong><span>Час указано за Києвом.</span></div>
-<div class="support"><p><b>Не можеш увійти?</b><br>Напиши нам — допоможемо перевірити доступ.</p><a id="supportLogin" class="btn ghost" href="#" target="_blank" rel="noopener">Написати в Telegram</a></div>
-</div>
+<section id="admin" class="section">
+  <div id="adminLoginCard" class="panel admin-login">
+    <div class="eyebrow">Control room</div>
+    <h2>Адміністрування</h2>
+    <p class="sub">Вхід лише для організаторів.</p>
+    <div class="field"><label>Пароль адміністратора</label><input id="adminPassword" type="password" placeholder="••••••••"></div>
+    <div class="actions"><button id="adminLoginBtn" class="btn btn-primary">Увійти</button></div>
+    <div id="adminStatus" class="status"></div>
+  </div>
+
+  <div id="adminPanel" class="panel hide">
+    <div class="eyebrow">Налаштування</div>
+    <h2>Доступи учасників</h2>
+    <div class="test-tools">
+      <h3>Видати один доступ</h3>
+      <div class="formgrid">
+        <div class="field"><label>Ім’я учасника</label><input id="accessName" placeholder="Анна Шевченко"></div>
+        <div class="field"><label>Telegram або email</label><input id="accessContact" placeholder="@username або name@gmail.com"></div>
+      </div>
+      <div class="actions"><button id="createAccessBtn" class="btn primary">Створити логін і пароль</button><button id="importMainBtn" class="btn ghost">Імпортувати нових з основної таблиці</button></div>
+      <div id="credentialOutput" class="credential-output hide"></div>
+    </div>
+    <div class="admin-settings">
+      <div class="setting"><strong>Дедлайн реєстрації</strong><input id="adminDeadline" type="datetime-local"></div>
+      <div class="setting"><strong>Дата доступу до тесту</strong><input id="adminTestStart" type="datetime-local"></div>
+      <div class="setting"><strong>Реєстрація</strong><select id="adminRegOpen"><option value="yes">Відкрита</option><option value="no">Закрита</option></select></div>
+      <div class="setting"><strong>Математика · Telegram</strong><input id="mathTelegram" placeholder="https://t.me/..."></div>
+      <div class="setting"><strong>Математика · Instagram</strong><input id="mathInstagram" placeholder="https://instagram.com/..."></div>
+      <div class="setting"><strong>Математика · TikTok</strong><input id="mathTiktok" placeholder="https://tiktok.com/@..."></div>
+      <div class="setting"><strong>Інші 3 · Telegram</strong><input id="otherTelegram" placeholder="https://t.me/..."></div>
+      <div class="setting"><strong>Інші 3 · Instagram</strong><input id="otherInstagram" placeholder="https://instagram.com/..."></div>
+      <div class="setting"><strong>Інші 3 · TikTok</strong><input id="otherTiktok" placeholder="https://tiktok.com/@..."></div>
+    </div>
+
+    <div class="toolbar">
+      <button id="saveAdminSettings" class="btn btn-primary">Зберегти налаштування</button>
+      <button id="exportAdminCsv" class="btn btn-green">Експорт CSV / Excel</button>
+      <button id="refreshAdmin" class="btn btn-ghost">Оновити список</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>№</th><th>ПІБ</th><th>Телефон</th><th>Telegram</th><th>Email</th><th>Клас</th><th>Місто</th><th>Логін</th><th>Статус</th></tr></thead>
+        <tbody id="participantsBody"></tbody>
+      </table>
+    </div>
+  </div>
 </section>
+
 </main>
 
-<footer class="footer"><span>© 2026 Пробний мультитест · Kolisnyk Academy × Lessons for You</span><span>3 жовтня 2026</span></footer>
+<footer class="footer"><span>© 2026 Пробний мультитест · Kolisnyk Academy × Lessons for You</span><span>3 жовтня 2026</span><button id="versionKnock" class="version-knock" aria-label=""></button></footer>
 
-<script>
-const CONFIG={
-  REGISTRATION_OPEN:true,
-  FORM_ENDPOINT:"https://script.google.com/macros/s/AKfycbw0Lj8RtqIamar2h9yXeazFTadYvfIfsTqUpcKcPK1mEi8cV-XqfP97SzwzVKRu-IeN/exec",
-  SUPPORT_TELEGRAM:"https://t.me/kolisnyk_academy",
-  DEADLINE:"2026-10-02T23:59:00+03:00",
-  SESSIONS:{
-    firstStart:"2026-10-03T10:00:00+03:00",
-    firstEnd:"2026-10-03T12:00:00+03:00",
-    secondStart:"2026-10-03T12:20:00+03:00",
-    secondEnd:"2026-10-03T14:20:00+03:00"
-  },
-  SOCIALS:{
-    kolisnyk:{
-      telegram:"https://t.me/kolisnyk_academy",
-      tiktok:"https://www.tiktok.com/@kolisnyk_academy",
-      site:"https://olexanderkolsnyk.github.io/Kolisnyk-Academy/",
-      viber:"https://r.mssg.me/m/697bfcc0610fc48495b6ee1d",
-      instagram:"https://www.instagram.com/kolisnyk_academy",
-      youtube:"https://www.youtube.com/@kolisnyk_academy"
-    },
-    lessons4you:{
-      telegram:"https://t.me/lessons4you",
-      tiktok:"https://www.tiktok.com/@lessons.4.you?is_from_webapp=1&sender_device=pc",
-      site:"https://www.lessons4you.party",
-      instagram:"https://www.instagram.com/lessons.4.you?stkn=eWkzbnVybnd5M3U0"
-    }
-  }
-};
+<div id="finishModal" class="modal">
+  <div class="modal-card">
+    <div class="eyebrow">Завершення етапу</div>
+    <h3 id="finishTitle">Ви впевнені?</h3>
+    <p id="finishSummary"></p><div id="finishMissing" class="missing-review"></div>
+    <div class="actions">
+      <button id="cancelFinish" class="btn btn-ghost">Ні, повернутися до завдань</button>
+      <button id="confirmFinish" class="btn btn-primary">Так, завершити роботу</button>
+    </div>
+  </div>
+</div>
 
-const STORAGE_KEYS={attribution:"pnmt_attribution_v1",registrationId:"pnmt_registration_id"};
-const UTM_KEYS=["utm_source","utm_medium","utm_campaign","utm_content","utm_term"];
+<div id="breakModal" class="modal">
+  <div class="modal-card">
+    <div class="eyebrow">Перерва</div>
+    <h3>Перший етап завершено</h3>
+    <p>Повернутися до української мови та математики вже неможливо. Друга сесія почнеться у запланований час — о 12:20. Якщо першу сесію завершено раніше, перерва автоматично буде довшою.</p>
+    <div class="timer" style="display:inline-block;margin:10px 0 5px"><span id="breakTimerText">00:20:00</span></div>
+    <div class="actions"><button id="skipBreakBtn" hidden data-test-control class="btn primary">Відкрити другу сесію зараз</button></div>
+  </div>
+</div>
 
-function safeJson(value,fallback){
-  try{return JSON.parse(value)}catch(_){return fallback}
-}
-function cleanUrl(value){
-  if(!value)return "";
-  try{const u=new URL(value,location.href);return u.origin+u.pathname}catch(_){return ""}
-}
-function readUtm(){
-  const params=new URLSearchParams(location.search);
-  const result={};
-  UTM_KEYS.forEach(key=>result[key]=(params.get(key)||"").slice(0,200));
-  return result;
-}
-function hasUtm(utm){return UTM_KEYS.some(key=>Boolean(utm[key]))}
-function captureAttribution(){
-  const current=readUtm();
-  const previous=safeJson(localStorage.getItem(STORAGE_KEYS.attribution),null);
-  const landing=cleanUrl(location.href);
-  const referrer=cleanUrl(document.referrer);
-  const data=previous&&previous.first?previous:{
-    first:current,
-    last:current,
-    initialReferrer:referrer,
-    initialLandingPage:landing,
-    lastReferrer:referrer,
-    lastLandingPage:landing
-  };
-  if(previous&&hasUtm(current))data.last=current;
-  data.lastReferrer=referrer;
-  data.lastLandingPage=landing;
-  localStorage.setItem(STORAGE_KEYS.attribution,JSON.stringify(data));
-  return data;
-}
-const ATTRIBUTION=captureAttribution();
+<div id="resultModal" class="modal">
+  <div class="modal-card">
+    <div class="eyebrow">Результат</div>
+    <h3>Пробний НМТ завершений</h3>
+    <p>Результат обчислено лише за відповідями, які були підтверджені кнопкою «Зберегти відповідь».</p>
+    <div id="resultGrid" class="result-grid"></div><div id="deliveryState" class="delivery-state hide" role="status" aria-live="polite"></div>
+    <div class="actions"><button id="repeatTestBtn" hidden data-test-control class="btn primary">Скинути й пройти ще раз</button><button id="resultHome" class="btn ghost">На головну</button><button class="btn btn-ghost" data-nav="tutors">Підготовка з викладачем</button></div>
+  </div>
+</div>
 
-function attributionPayload(){
-  const first=ATTRIBUTION.first||{};
-  const last=ATTRIBUTION.last||{};
-  return {
-    first_utm_source:first.utm_source||"",
-    first_utm_medium:first.utm_medium||"",
-    first_utm_campaign:first.utm_campaign||"",
-    first_utm_content:first.utm_content||"",
-    first_utm_term:first.utm_term||"",
-    last_utm_source:last.utm_source||"",
-    last_utm_medium:last.utm_medium||"",
-    last_utm_campaign:last.utm_campaign||"",
-    last_utm_content:last.utm_content||"",
-    last_utm_term:last.utm_term||"",
-    initial_referrer:ATTRIBUTION.initialReferrer||"",
-    initial_landing_page:ATTRIBUTION.initialLandingPage||""
-  };
-}
-
-function showPage(id,options){
-  document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===id));
-  document.querySelectorAll("[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===id));
-  const target=options&&options.prepTarget?document.getElementById(options.prepTarget):null;
-  if(target)setTimeout(()=>target.scrollIntoView({behavior:"smooth",block:"start"}),40);
-  else window.scrollTo({top:0,behavior:"smooth"});
-}
-document.querySelectorAll("[data-page]").forEach(button=>button.addEventListener("click",()=>{
-  showPage(button.dataset.page,{prepTarget:button.dataset.prepTarget||""});
-}));
-
-let logoClickTimes=[];
-document.getElementById("homeLogo").addEventListener("click",()=>{
-  showPage("home");
-  const now=Date.now();
-  logoClickTimes=logoClickTimes.filter(time=>now-time<2500);
-  logoClickTimes.push(now);
-  if(logoClickTimes.length>=7){
-    logoClickTimes=[];
-    location.assign("admin.html");
-  }
-});
-document.addEventListener("keydown",event=>{
-  if(event.ctrlKey&&event.shiftKey&&event.key.toLowerCase()==="k"){
-    event.preventDefault();
-    location.assign("admin.html");
-  }
-});
-
-function bindSupport(id){
-  const el=document.getElementById(id);
-  if(!el)return;
-  const supportUrl=safePublicUrl(CONFIG.SUPPORT_TELEGRAM);
-  if(!supportUrl){el.style.display="none";return}
-  el.style.display="";
-  el.href=supportUrl;
-  el.dataset.trackEvent="support_click";
-  el.dataset.target="kolisnyk_academy_telegram";
-}
-["supportHome","supportRegister","supportSuccess","supportPrep","supportLogin","mobileSupport"].forEach(bindSupport);
-
-function icon(name){
-  const common='viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"';
-  const icons={
-    telegram:'<svg '+common+'><path d="M21 3 3.8 9.6c-1.2.5-1.2 1.2-.2 1.5l4.4 1.4 1.7 5.2c.2.7.1 1 .8 1 .5 0 .8-.2 1-.5l2.5-2.4 5 3.7c.9.5 1.6.2 1.8-.9L23 4.5C23.3 3.2 22.5 2.6 21 3Z"/><path d="m8 12.5 10.7-6.7M9.7 17.7 10 13l8.7-7.2"/></svg>',
-    instagram:'<svg '+common+'><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg>',
-    tiktok:'<svg '+common+'><path d="M15 4v10.2a4.2 4.2 0 1 1-3.6-4.1"/><path d="M15 4c.8 2.5 2.3 3.8 5 4"/></svg>',
-    site:'<svg '+common+'><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
-    viber:'<svg '+common+'><path d="M5 4.8A10.5 10.5 0 0 1 19 5c2.2 2.2 2.4 7.5.7 10.2-1.5 2.3-4.8 3.8-8 3.4L7 21v-3.7C3.6 14.8 2.6 8.3 5 4.8Z"/><path d="M8.2 7.7c.5 4.1 3.6 7.1 7.7 7.8M8.5 8.2l1.4-.8 1.2 2-1 1M13.7 13.3l1-1 2 1.2-.7 1.4"/></svg>',
-    youtube:'<svg '+common+'><path d="M21 8.2a2.7 2.7 0 0 0-1.9-1.9C17.4 5.8 12 5.8 12 5.8s-5.4 0-7.1.5A2.7 2.7 0 0 0 3 8.2 28 28 0 0 0 2.5 12 28 28 0 0 0 3 15.8a2.7 2.7 0 0 0 1.9 1.9c1.7.5 7.1.5 7.1.5s5.4 0 7.1-.5a2.7 2.7 0 0 0 1.9-1.9 28 28 0 0 0 .5-3.8 28 28 0 0 0-.5-3.8Z"/><path d="m10 9 5 3-5 3Z"/></svg>'
-  };
-  return icons[name]||icons.site;
-}
-function safePublicUrl(value){
-  if(!value)return "";
-  try{const url=new URL(value,location.href);return url.protocol==="https:"?url.href:""}catch(_){return ""}
-}
-function social(iconName,url,label,eventName,target){
-  const safeUrl=safePublicUrl(url);
-  if(!safeUrl)return "";
-  return '<a class="social" href="'+safeUrl+'" target="_blank" rel="noopener" aria-label="'+label+'" title="'+label+'" data-track-event="'+eventName+'" data-target="'+target+'">'+icon(iconName)+'<span class="sr-only">'+label+'</span></a>';
-}
-function renderPublicLinks(){
-  ["supportHome","supportRegister","supportSuccess","supportPrep","supportLogin","mobileSupport"].forEach(bindSupport);
-  const k=CONFIG.SOCIALS.kolisnyk;
-  document.getElementById("mathSocials").innerHTML=
-    social("telegram",k.telegram,"Telegram Kolisnyk Academy","kolisnyk_telegram_click","telegram")+
-    social("tiktok",k.tiktok,"TikTok Kolisnyk Academy","kolisnyk_tiktok_click","tiktok")+
-    social("site",k.site,"Сайт Kolisnyk Academy","preparation_open","kolisnyk_site")+
-    social("viber",k.viber,"Viber Kolisnyk Academy","preparation_open","kolisnyk_viber")+
-    social("instagram",k.instagram,"Instagram Kolisnyk Academy","kolisnyk_instagram_click","instagram")+
-    social("youtube",k.youtube,"YouTube Kolisnyk Academy","preparation_open","kolisnyk_youtube");
-  const l=CONFIG.SOCIALS.lessons4you;
-  document.getElementById("otherSocials").innerHTML=
-    social("telegram",l.telegram,"Telegram Lessons for You","lessons4you_telegram_click","telegram")+
-    social("tiktok",l.tiktok,"TikTok Lessons for You","lessons4you_tiktok_click","tiktok")+
-    social("site",l.site,"Сайт Lessons for You","preparation_open","lessons4you_site")+
-    social("instagram",l.instagram,"Instagram Lessons for You","lessons4you_instagram_click","instagram");
-}
-function applyPublicConfig(config){
-  if(!config||typeof config!=="object")return;
-  if(config.RegistrationOpen==="true"||config.RegistrationOpen==="false")CONFIG.REGISTRATION_OPEN=config.RegistrationOpen==="true";
-  if(config.RegistrationDeadline)CONFIG.DEADLINE=config.RegistrationDeadline;
-  if(config.SupportTelegram)CONFIG.SUPPORT_TELEGRAM=config.SupportTelegram;
-  const mappings=[
-    ["KolisnykTelegram",CONFIG.SOCIALS.kolisnyk,"telegram"],
-    ["KolisnykInstagram",CONFIG.SOCIALS.kolisnyk,"instagram"],
-    ["KolisnykTikTok",CONFIG.SOCIALS.kolisnyk,"tiktok"],
-    ["KolisnykSite",CONFIG.SOCIALS.kolisnyk,"site"],
-    ["KolisnykViber",CONFIG.SOCIALS.kolisnyk,"viber"],
-    ["KolisnykYouTube",CONFIG.SOCIALS.kolisnyk,"youtube"],
-    ["Lessons4YouTelegram",CONFIG.SOCIALS.lessons4you,"telegram"],
-    ["Lessons4YouInstagram",CONFIG.SOCIALS.lessons4you,"instagram"],
-    ["Lessons4YouTikTok",CONFIG.SOCIALS.lessons4you,"tiktok"],
-    ["Lessons4YouSite",CONFIG.SOCIALS.lessons4you,"site"]
-  ];
-  mappings.forEach(([setting,group,key])=>{if(config[setting])group[key]=config[setting]});
-}
-async function loadPublicConfig(){
-  try{
-    const response=await fetch(CONFIG.FORM_ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"publicConfig"})});
-    const data=await response.json();
-    if(data.ok){
-      applyPublicConfig(data.config);
-      renderPublicLinks();
-      updateSessionStatus();
-      updateCountdown();
-    }
-  }catch(_){}
-}
-renderPublicLinks();
-loadPublicConfig();
-
-function registrationId(){return localStorage.getItem(STORAGE_KEYS.registrationId)||""}
-function eventPayload(eventName,category,target){
-  const last=ATTRIBUTION.last||{};
-  return {
-    action:"logEvent",
-    registration_id:registrationId(),
-    event_name:eventName,
-    event_category:category||"business",
-    target:target||"",
-    page:location.pathname,
-    utm_source:last.utm_source||"",
-    utm_medium:last.utm_medium||"",
-    utm_campaign:last.utm_campaign||"",
-    utm_content:last.utm_content||""
-  };
-}
-function logEvent(eventName,category,target){
-  if(!CONFIG.FORM_ENDPOINT||!registrationId())return;
-  const body=JSON.stringify(eventPayload(eventName,category,target));
-  if(navigator.sendBeacon){
-    const sent=navigator.sendBeacon(CONFIG.FORM_ENDPOINT,new Blob([body],{type:"text/plain;charset=UTF-8"}));
-    if(sent)return;
-  }
-  fetch(CONFIG.FORM_ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body,mode:"no-cors",keepalive:true}).catch(()=>{});
-}
-document.addEventListener("click",event=>{
-  const tracked=event.target.closest("[data-track-event]");
-  if(tracked)logEvent(tracked.dataset.trackEvent,"business",tracked.dataset.target||"");
-});
-
-function updateSessionStatus(){
-  const box=document.getElementById("sessionStatus");
-  if(!box)return;
-  const now=Date.now();
-  const s=CONFIG.SESSIONS;
-  const firstStart=new Date(s.firstStart).getTime();
-  const firstEnd=new Date(s.firstEnd).getTime();
-  const secondStart=new Date(s.secondStart).getTime();
-  const secondEnd=new Date(s.secondEnd).getTime();
-  box.classList.remove("live");
-  if(now<firstStart){
-    box.innerHTML="<strong>Перша сесія почнеться о 10:00</strong><span>Увійди завчасно. Час указано за Києвом.</span>";
-  }else if(now<firstEnd){
-    box.classList.add("live");
-    box.innerHTML="<strong>Перша сесія триває до 12:00</strong><span>Заверши її самостійно до 12:00. Після завершення відпочивай до 12:20.</span>";
-  }else if(now<secondStart){
-    box.innerHTML="<strong>Перерва до 12:20</strong><span>Перша сесія вже завершена. Друга почнеться о 12:20.</span>";
-  }else if(now<secondEnd){
-    box.classList.add("live");
-    box.innerHTML="<strong>Друга сесія триває до 14:20</strong><span>Історія України + англійська мова.</span>";
-  }else{
-    box.innerHTML="<strong>Пробний мультитест завершено</strong><span>Обидві сесії вже закінчилися.</span>";
-  }
-}
-updateSessionStatus();setInterval(updateSessionStatus,30000);
-
-function telegramValid(value){return /^@[A-Za-z0-9_]{5,32}$/.test(value.trim())}
-
-function updateCountdown(){
-  const diff=CONFIG.REGISTRATION_OPEN?Math.max(0,new Date(CONFIG.DEADLINE).getTime()-Date.now()):0;
-  if(diff===0){
-    document.getElementById("countdown").innerHTML='<div class="count" style="grid-column:1/-1"><strong style="font-size:16px">Реєстрацію завершено</strong></div>';
-    document.querySelectorAll('[data-page="register"]').forEach(button=>{button.disabled=true;if(!button.closest(".mobile-nav"))button.textContent="Реєстрацію завершено"});
-    return;
-  }
-  document.getElementById("days").textContent=String(Math.floor(diff/86400000)).padStart(2,"0");
-  document.getElementById("hours").textContent=String(Math.floor((diff%86400000)/3600000)).padStart(2,"0");
-  document.getElementById("minutes").textContent=String(Math.floor((diff%3600000)/60000)).padStart(2,"0");
-  document.getElementById("seconds").textContent=String(Math.floor((diff%60000)/1000)).padStart(2,"0");
-}
-updateCountdown();setInterval(updateCountdown,1000);
-
-async function sendRegistration(payload){
-  if(!CONFIG.FORM_ENDPOINT)throw new Error("Реєстрація тимчасово недоступна. Спробуй трохи пізніше.");
-  const response=await fetch(CONFIG.FORM_ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
-  const data=await response.json();
-  if(!data.ok)throw new Error(data.error||"Не вдалося надіслати заявку.");
-  return data;
-}
-
-document.getElementById("registrationForm").addEventListener("submit",async event=>{
-  event.preventDefault();
-  const box=document.getElementById("registrationStatus");
-  const tg=document.getElementById("regTelegram").value.trim();
-  const button=event.submitter;
-  if(Date.now()>new Date(CONFIG.DEADLINE).getTime()){
-    box.className="status err show";box.textContent="Реєстрацію вже завершено.";return;
-  }
-  if(!telegramValid(tg)){
-    box.className="status err show";box.textContent="Вкажи Telegram у форматі @username.";return;
-  }
-  button.disabled=true;button.textContent="Надсилаємо…";
-  try{
-    const data=await sendRegistration({
-      action:"register",
-      name:document.getElementById("regName").value.trim(),
-      phone:document.getElementById("regPhone").value.trim(),
-      telegram:tg,
-      email:document.getElementById("regEmail").value.trim(),
-      grade:document.getElementById("regGrade").value,
-      city:document.getElementById("regCity").value.trim(),
-      createdAt:new Date().toISOString(),
-      ...attributionPayload()
-    });
-    if(data.registration_id){
-      localStorage.setItem(STORAGE_KEYS.registrationId,String(data.registration_id));
-      logEvent("registration_success","conversion","registration");
-    }
-    event.target.reset();
-    box.className="status";
-    showPage("success");
-    window.dispatchEvent(new CustomEvent("probneMultitestRegistrationSuccess",{detail:{registrationId:data.registration_id||""}}));
-  }catch(error){
-    box.className="status err show";box.textContent=error.message;
-  }finally{
-    button.disabled=false;button.textContent="Надіслати заявку";
-  }
-});
-</script>
+<script src="assets/exam-data.js?v=41"></script>
+<script src="assets/app.js?v=41"></script>
+<div id="warningToast" class="warning-toast" role="status" aria-live="assertive"></div>
 </body>
 </html>
-
-
-
