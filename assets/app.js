@@ -8,15 +8,20 @@ const CONFIG={
   LOCAL_DEMO:false
 };
 
-const STORAGE={
+// GitHub Pages repositories share an origin, so scope browser state to this site.
+// Keep the old unscoped keys untouched for the test site and recovery.
+const STORAGE_PREFIX="pnmt:"+new URL(".",location.href).pathname+":";
+const STORAGE=Object.fromEntries(Object.entries({
   participants:"probne_nmt_participants_v36",
   settings:"probne_nmt_settings_v36",
   answers:"probne_nmt_answers_v36",
   session:"probne_nmt_session_v37",
   answerTimes:"probne_nmt_answer_times_v38",
   pendingResults:"probne_nmt_pending_results_v39",
-  submissionId:"probne_nmt_submission_id_v39"
-};
+  submissionId:"probne_nmt_submission_id_v39",
+  visited:"probne_nmt_visited_v4",
+  flagged:"probne_nmt_flagged_v4"
+}).map(([name,key])=>[name,STORAGE_PREFIX+key]));
 
 const LABELS={
   ukrainian:"Українська мова",
@@ -74,8 +79,8 @@ const app={
   breakId:null,
   answers:JSON.parse(localStorage.getItem(STORAGE.answers)||"{}"),
   answerTimes:JSON.parse(localStorage.getItem(STORAGE.answerTimes)||"{}"),
-  visited:JSON.parse(localStorage.getItem("probne_nmt_visited_v4")||"{}"),
-  flagged:JSON.parse(localStorage.getItem("probne_nmt_flagged_v4")||"{}"),
+  visited:JSON.parse(localStorage.getItem(STORAGE.visited)||"{}"),
+  flagged:JSON.parse(localStorage.getItem(STORAGE.flagged)||"{}"),
   stageStartedAt:persistedSession?.stageStartedAt||0,stageEndsAt:persistedSession?.stageEndsAt||0,stage2StartsAt:persistedSession?.stage2StartsAt||0,attemptStartedAt:persistedSession?.attemptStartedAt||0,warned:{},
   adminToken:null
 };
@@ -320,7 +325,7 @@ function resetParticipantProgress(){
   if(pendingResults().length){alert("Дочекайтеся збереження попереднього результату.");return}
   clearInterval(app.timerId);clearInterval(app.breakId);
   app.stage=0;app.subject="ukrainian";app.questionIndex=0;app.secondsLeft=7200;app.breakSeconds=1200;app.answers={};app.answerTimes={};app.visited={};app.flagged={};app.attemptStartedAt=0;app.warned={};localStorage.removeItem(STORAGE.submissionId);
-  localStorage.removeItem(STORAGE.answers);localStorage.removeItem(STORAGE.answerTimes);localStorage.removeItem(STORAGE.session);localStorage.removeItem("probne_nmt_visited_v4");localStorage.removeItem("probne_nmt_flagged_v4");syncExamMode();
+  localStorage.removeItem(STORAGE.answers);localStorage.removeItem(STORAGE.answerTimes);localStorage.removeItem(STORAGE.session);localStorage.removeItem(STORAGE.visited);localStorage.removeItem(STORAGE.flagged);syncExamMode();
   breakModal.classList.remove("show");resultModal.classList.remove("show");rulesAgree.checked=false;lobbyName.textContent=app.user?.name||app.user?.login||"Учасник";showView("lobby");
 }
 resetProgressBtn.addEventListener("click",resetParticipantProgress);
@@ -371,7 +376,7 @@ function enforceUniqueMatch(source){
 }
 function renderQuestion(){
   if(!(app.stage===1||app.stage===3))return;updateSubjects();const q=QUESTION_BANK[app.subject]?.[app.questionIndex];if(!q)return;
-  const key=keyFor(app.subject,app.questionIndex);app.visited[key]=true;localStorage.setItem("probne_nmt_visited_v4",JSON.stringify(app.visited));
+  const key=keyFor(app.subject,app.questionIndex);app.visited[key]=true;localStorage.setItem(STORAGE.visited,JSON.stringify(app.visited));
   questionTitle.textContent=`${LABELS[app.subject]} · завдання ${q.number}`;typePill.textContent=typeName(q.type);
   const saved=app.answers[key];questionContent.innerHTML=`<article class="question-card imported-question"><div class="source-toolbar"><b>${esc(q.source)}</b><span></span></div>${q.promptHtml}</article>${answerControls(q,saved)}`;
   savedMessage.classList.remove("show");
