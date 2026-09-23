@@ -463,7 +463,8 @@ function socialIcon(name){
 }
 function socialButton(name,label,url){return url?'<a class="social" target="_blank" rel="noopener" href="'+esc(url)+'" aria-label="'+esc(label)+'" title="'+esc(label)+'">'+socialIcon(name)+'</a>':''}
 function renderSocials(settings=getLocalSettings()){
-  const s=settings.socials||{},m=s.math||{},o=s.other||{};
+  const defaults={math:{telegram:"https://t.me/kolisnyk_academy",tiktok:"https://www.tiktok.com/@kolisnyk_academy",site:"https://olexanderkolsnyk.github.io/Kolisnyk-Academy/",viber:"https://r.mssg.me/m/697bfcc0610fc48495b6ee1d",instagram:"https://www.instagram.com/kolisnyk_academy",youtube:"https://www.youtube.com/@kolisnyk_academy"},other:{telegram:"https://t.me/lessons4you",tiktok:"https://www.tiktok.com/@lessons.4.you?is_from_webapp=1&sender_device=pc",site:"https://www.lessons4you.party",instagram:"https://www.instagram.com/lessons.4.you?stkn=eWkzbnVybnd5M3U0"}};
+  const s=settings.socials||{},merge=(base,values)=>({...base,...Object.fromEntries(Object.entries(values||{}).filter(([,value])=>value))}),m=merge(defaults.math,s.math),o=merge(defaults.other,s.other);
   mathSocials.innerHTML=socialButton("telegram","Telegram Kolisnyk Academy",m.telegram)+socialButton("tiktok","TikTok Kolisnyk Academy",m.tiktok)+socialButton("site","Сайт Kolisnyk Academy",m.site)+socialButton("viber","Viber Kolisnyk Academy",m.viber)+socialButton("instagram","Instagram Kolisnyk Academy",m.instagram)+socialButton("youtube","YouTube Kolisnyk Academy",m.youtube);
   otherSocials.innerHTML=socialButton("telegram","Telegram Lessons for You",o.telegram)+socialButton("tiktok","TikTok Lessons for You",o.tiktok)+socialButton("site","Сайт Lessons for You",o.site)+socialButton("instagram","Instagram Lessons for You",o.instagram);
 }

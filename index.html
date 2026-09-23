@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Пробний мультитест — Kolisnyk Academy × Lessons for You</title>
 <meta name="description" content="Пробний НМТ у форматі, наближеному до реального тестувальника: реєстрація, персональний доступ, 2 етапи, 20-хвилинна перерва та 4 предмети.">
-<link rel="stylesheet" href="assets/styles.css?v=41">
+<link rel="stylesheet" href="assets/styles.css?v=42">
 </head>
 <body>
 
@@ -38,7 +38,7 @@
 <div class="count"><strong id="seconds">00</strong><span>секунд</span></div>
 </div></div>
 <div class="schedule"><div><strong>10:00–12:00</strong><span>Перша сесія: українська мова + математика</span></div><div><strong>12:00–12:20</strong><span>Перерва. Якщо завершиш раніше — відпочиваєш до 12:20</span></div><div><strong>12:20–14:20</strong><span>Друга сесія: історія України + англійська</span></div></div>
-<div class="actions"><button class="btn primary" data-nav="register">Зареєструватися</button><button class="btn ghost" data-nav="tutors" data-prep-target="mathPrep"  >Підготовка: Kolisnyk Academy</button><button class="btn ghost" data-nav="tutors" data-prep-target="otherPrep"  >Підготовка: Lessons for You</button></div>
+<div class="actions"><button class="btn primary" data-nav="register">Зареєструватися</button><button class="btn ghost" data-nav="login">Увійти до кабінету</button><button class="btn ghost" data-nav="tutors" data-prep-target="mathPrep"  >Підготовка: Kolisnyk Academy</button><button class="btn ghost" data-nav="tutors" data-prep-target="otherPrep"  >Підготовка: Lessons for You</button></div>
 </div>
 
 <div class="card">
@@ -71,12 +71,12 @@
 <div class="eyebrow">Реєстрація</div><h2>Запис на пробний мультитест</h2><p class="lead" style="font-size:16px">Заявки приймаємо до 2 жовтня 2026, 23:59 за київським часом.</p>
 <form id="registrationForm">
 <div class="formgrid">
-<div class="field full"><label>Ім'я та прізвище</label><input id="regName" autocomplete="name" required placeholder="Наприклад, Анна Шевченко"></div>
-<div class="field"><label>Телефон</label><input id="regPhone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="+380 67 123 45 67"></div>
-<div class="field"><label>Telegram</label><input id="regTelegram" autocapitalize="off" spellcheck="false" required placeholder="@username"></div>
-<div class="field"><label>Email</label><input id="regEmail" type="email" inputmode="email" autocomplete="email" required placeholder="name@gmail.com"></div>
-<div class="field"><label>Клас</label><select id="regGrade" required><option value="">Оберіть клас</option><option>9</option><option>10</option><option>11</option><option>Випускник/ця</option></select></div>
-<div class="field full"><label>Місто</label><input id="regCity" autocomplete="address-level2" required placeholder="Київ"></div>
+<div class="field full"><label for="regName">Ім'я та прізвище</label><input id="regName" autocomplete="name" required placeholder="Наприклад, Анна Шевченко"></div>
+<div class="field"><label for="regPhone">Телефон</label><input id="regPhone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="+380 67 123 45 67"></div>
+<div class="field"><label for="regTelegram">Telegram</label><input id="regTelegram" autocapitalize="off" spellcheck="false" required placeholder="@username"></div>
+<div class="field"><label for="regEmail">Email</label><input id="regEmail" type="email" inputmode="email" autocomplete="email" required placeholder="name@gmail.com"></div>
+<div class="field"><label for="regGrade">Клас</label><select id="regGrade" required><option value="">Оберіть клас</option><option>9</option><option>10</option><option>11</option><option>Випускник/ця</option></select></div>
+<div class="field full"><label for="regCity">Місто</label><input id="regCity" autocomplete="address-level2" required placeholder="Київ"></div>
 </div>
 <div class="notice"><b>Перевір Telegram перед відправленням.</b> Вкажи актуальний <b>@username</b>. Якщо username неправильний або з тобою неможливо зв'язатися, ми не зможемо підтвердити участь та надіслати важливу інформацію.</div>
 <div class="notice wait-notice"><b>Після надсилання форми не виходьте із сайту.</b> Дочекайтеся, поки система згенерує й покаже ваші індивідуальні логін і пароль. Це може тривати кілька секунд.</div>
@@ -98,8 +98,8 @@
 <div class="eyebrow">3 жовтня 2026</div><h2>Вхід для учасників</h2><p class="lead" style="font-size:16px">Вхід для учасників буде доступний з 09:00 3 жовтня. Увійди завчасно — тест починається о 10:00.</p>
 <div id="sessionStatus" class="sessionbox" aria-live="polite"><strong>Вхід для зареєстрованих учасників</strong><span>Використай персональні логін і пароль, отримані після реєстрації.</span></div>
   <form id="loginForm" style="margin-top:18px">
-    <div class="field"><label>Логін</label><input id="loginInput" required autocomplete="username" placeholder="Введіть логін"></div>
-    <div class="field" style="margin-top:14px"><label>Пароль</label><input id="passwordInput" type="password" required autocomplete="current-password" placeholder="Введіть пароль"></div>
+    <div class="field"><label for="loginInput">Логін</label><input id="loginInput" required autocomplete="username" placeholder="Введіть логін"></div>
+    <div class="field" style="margin-top:14px"><label for="passwordInput">Пароль</label><input id="passwordInput" type="password" required autocomplete="current-password" placeholder="Введіть пароль"></div>
     <div class="actions"><button class="btn primary" type="submit">Увійти</button></div>
     <div id="loginStatus" class="status"></div>
   </form>
@@ -246,7 +246,7 @@
     <div class="eyebrow">Control room</div>
     <h2>Адміністрування</h2>
     <p class="sub">Вхід лише для організаторів.</p>
-    <div class="field"><label>Пароль адміністратора</label><input id="adminPassword" type="password" placeholder="••••••••"></div>
+    <div class="field"><label for="adminPassword">Пароль адміністратора</label><input id="adminPassword" type="password" placeholder="••••••••"></div>
     <div class="actions"><button id="adminLoginBtn" class="btn btn-primary">Увійти</button></div>
     <div id="adminStatus" class="status"></div>
   </div>
@@ -257,8 +257,8 @@
     <div class="test-tools">
       <h3>Видати один доступ</h3>
       <div class="formgrid">
-        <div class="field"><label>Ім’я учасника</label><input id="accessName" placeholder="Анна Шевченко"></div>
-        <div class="field"><label>Telegram або email</label><input id="accessContact" placeholder="@username або name@gmail.com"></div>
+        <div class="field"><label for="accessName">Ім’я учасника</label><input id="accessName" placeholder="Анна Шевченко"></div>
+        <div class="field"><label for="accessContact">Telegram або email</label><input id="accessContact" placeholder="@username або name@gmail.com"></div>
       </div>
       <div class="actions"><button id="createAccessBtn" class="btn primary">Створити логін і пароль</button><button id="importMainBtn" class="btn ghost">Імпортувати нових з основної таблиці</button></div>
       <div id="credentialOutput" class="credential-output hide"></div>
@@ -326,8 +326,9 @@
   </div>
 </div>
 
-<script src="assets/exam-data.js?v=41"></script>
-<script src="assets/app.js?v=41"></script>
 <div id="warningToast" class="warning-toast" role="status" aria-live="assertive"></div>
+<script src="assets/exam-data.js?v=42"></script>
+<script src="assets/app.js?v=42"></script>
+
 </body>
 </html>
