@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs><linearGradient id="coral" x2="1" y2="1"><stop stop-color="#ff7868"/><stop offset="1" stop-color="#ff957a"/></linearGradient></defs>
+  <rect width="64" height="64" rx="19" fill="url(#coral)"/>
+  <text x="32" y="42" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="29" font-weight="900" letter-spacing="-2">PM</text>
+</svg>
