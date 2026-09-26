@@ -6,16 +6,17 @@
 <title>Пробний мультитест — Kolisnyk Academy × Lessons for You</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=1">
 <meta name="description" content="Пробний НМТ у форматі, наближеному до реального тестувальника: реєстрація, персональний доступ, 2 етапи, 20-хвилинна перерва та 4 предмети.">
-<link rel="stylesheet" href="assets/styles.css?v=43">
+<link rel="stylesheet" href="assets/styles.css?v=46">
 </head>
 <body>
 
 <header class="top"><div class="topin">
 <button class="brand" id="brandHome"><span class="logo">PM</span><span><strong>Пробний мультитест</strong><small>Kolisnyk Academy × Lessons for You</small></span></button>
-<nav class="desktop-nav" aria-label="Основна навігація"><button data-nav="home" class="active">Головна</button><button data-nav="register">Реєстрація</button><button data-nav="tutors">Підготовка</button><button data-nav="login">Вхід</button></nav>
+<nav class="desktop-nav" aria-label="Основна навігація"><button data-nav="ended" class="post-event-only" hidden>Завершити тест</button><button data-nav="home" class="active">Головна</button><button data-nav="register">Реєстрація</button><button data-nav="tutors">Підготовка</button><button data-nav="login">Вхід</button></nav>
 </div></header>
 
 <nav class="mobile-nav" aria-label="Мобільна навігація">
+<button data-nav="ended" class="post-event-only" hidden>Завершити тест</button>
 <button data-nav="home" class="active">Головна</button>
 <button data-nav="register">Реєстрація</button>
 <button data-nav="tutors">Підготовка</button>
@@ -64,6 +65,44 @@
 <details><summary>Що буде після реєстрації?</summary><p>Команда отримає твою заявку. Важливу організаційну інформацію та доступ надішлемо за вказаними контактами.</p></details>
 <details><summary>Що робити, якщо помилився / помилилася в Telegram?</summary><p>Напиши нам у Telegram підтримки та вкажи ім'я, з яким реєструвався / реєструвалася.</p></details>
 </div></div>
+</section>
+
+<section id="ended" class="section post-event-section" aria-labelledby="endedTitle" aria-hidden="true">
+<div class="post-event-hero card">
+  <div class="post-event-status"><span aria-hidden="true">✓</span> Тестування завершено</div>
+  <div class="eyebrow">Пробний мультитест · 3 жовтня 2026</div>
+  <h1 id="endedTitle">Дякуємо, що прийшли!</h1>
+  <p class="lead">Пробний НМТ завершився о 14:20. Дякуємо, що перевірили свої знання разом із Kolisnyk Academy × Lessons for You.</p>
+  <div class="post-event-note"><b>Якщо ви не встигли пройти або завершити тест — не засмучуйтеся.</b> Це не останнє тестування: ми повідомимо про наступні можливості окремо.</div>
+  <div class="actions post-event-actions">
+    <button class="btn primary" data-nav="ended">Завершити тест</button>
+    <button class="btn ghost" data-nav="tutors">Підготовка з викладачем</button>
+  </div>
+</div>
+
+<div class="post-event-grid">
+  <article class="card post-event-card">
+    <span class="post-event-icon" aria-hidden="true">01</span>
+    <h2>Що буде з результатом?</h2>
+    <p>Збережені відповіді та результат передано організаторам. Якщо надсилання перервалося через інтернет, сайт повторить його автоматично з цього пристрою.</p>
+  </article>
+  <article class="card post-event-card">
+    <span class="post-event-icon" aria-hidden="true">02</span>
+    <h2>Як потрапити на наступний тест?</h2>
+    <p>Не покладайтеся на збережене посилання: для наступного тестування можуть бути інша сторінка й нові персональні дані для входу. Стежте за повідомленнями або напишіть нам.</p>
+  </article>
+  <article class="card post-event-card">
+    <span class="post-event-icon" aria-hidden="true">03</span>
+    <h2>Потрібна допомога?</h2>
+    <p>Якщо результат не надіслався, виникла технічна помилка чи залишилося організаційне питання — зверніться до підтримки.</p>
+    <a class="text-link" href="https://t.me/kolisnyk_academy" target="_blank" rel="noopener">Написати в Telegram →</a>
+  </article>
+</div>
+
+<div class="card post-event-footer">
+  <div><div class="eyebrow">Далі — більше</div><h2>До зустрічі на наступних тестуваннях</h2></div>
+  <p>Kolisnyk Academy відповідає за математику. Lessons for You — за українську мову, історію України та англійську мову.</p>
+</div>
 </section>
 
 <section id="register" class="section">
@@ -329,7 +368,7 @@
 
 <div id="warningToast" class="warning-toast" role="status" aria-live="assertive"></div>
 <script src="assets/exam-data.js?v=43"></script>
-<script src="assets/app.js?v=43"></script>
+<script src="assets/app.js?v=46"></script>
 
 </body>
 </html>
