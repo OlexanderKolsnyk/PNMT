@@ -87,6 +87,7 @@ const app={
 
 
 const EXAM_SCHEDULE={login:Date.parse('2026-10-03T09:00:00+03:00'),start:Date.parse('2026-10-03T10:00:00+03:00'),firstEnd:Date.parse('2026-10-03T12:00:00+03:00'),secondStart:Date.parse('2026-10-03T12:20:00+03:00'),end:Date.parse('2026-10-03T14:20:00+03:00')};
+const PUBLIC_END_SCREEN_AT=Date.parse('2026-10-03T14:20:30+03:00');
 function isTestUser(){return app.user?.testAccess===true}
 function updateTestControls(){document.querySelectorAll('[data-test-control]').forEach(button=>{button.hidden=!isTestUser()})}
 
@@ -162,9 +163,12 @@ function saveExamSession(){
 }
 function armExamGuard(){if(activeExamStage()&&!history.state?.examGuard)history.pushState({examGuard:true},"",location.href)}
 function showView(id){
-  if(activeExamStage()&&id!=="exam")return;
+  if(publicEndReached()&&!['ended','tutors'].includes(id))id='ended';
+  if(activeExamStage()&&id!=="exam"&&!publicEndReached())return;
   app.view=id;
+  if(id==='ended'||id==='tutors')document.getElementById('resultModal')?.classList.remove('show');
   document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===id));
+  document.getElementById('ended')?.setAttribute('aria-hidden',String(id!=='ended'));
   document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===id));
   window.scrollTo({top:0,behavior:"smooth"});
   if(id==="tutors") renderSocials();
@@ -175,7 +179,31 @@ function renderArchivePages(){
 document.querySelectorAll(".archive-block").forEach(x=>x.addEventListener("toggle",()=>{if(x.open)renderArchivePages()}));
 }
 document.querySelectorAll("[data-nav]").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.nav)));
-document.getElementById("brandHome").addEventListener("click",()=>{if(activeExamStage()){alert("Спочатку завершіть активний етап тестування.");return}showView("home")});
+function publicEndReached(now=Date.now()){return now>=PUBLIC_END_SCREEN_AT}
+let publicEndTransitionRunning=false;
+function applyPublicPhase(now=Date.now()){
+  const ended=publicEndReached(now);
+  document.body.classList.toggle('test-ended',ended);
+  document.querySelectorAll('.post-event-only').forEach(element=>{element.hidden=!ended});
+  if(!ended)return false;
+  if(activeExamStage()&&!publicEndTransitionRunning){
+    publicEndTransitionRunning=true;
+    finishWholeTest(true).catch(()=>{}).finally(()=>{publicEndTransitionRunning=false});
+  }else if(pendingResults().length){
+    flushPendingResults(false).catch(()=>{});
+  }
+  document.getElementById('resultModal')?.classList.remove('show');
+  if(!['ended','tutors'].includes(app.view))showView('ended');
+  return true;
+}
+function schedulePublicPhase(){
+  const delay=PUBLIC_END_SCREEN_AT-Date.now();
+  if(delay<=0){applyPublicPhase();return}
+  setTimeout(schedulePublicPhase,Math.min(delay+50,2147483647));
+}
+document.getElementById("brandHome").addEventListener("click",()=>{if(activeExamStage()&&!publicEndReached()){alert("Спочатку завершіть активний етап тестування.");return}showView(publicEndReached()?"ended":"home")});
+applyPublicPhase();
+schedulePublicPhase();
 
 function validTelegram(v){return /^@[A-Za-z0-9_]{5,32}$/.test(v.trim())}
 
@@ -459,7 +487,7 @@ async function finishWholeTest(automatic=false){
   if(sent){localStorage.removeItem(STORAGE.session)}
   else{deliveryState.className="delivery-state";deliveryState.textContent="Результат надійно збережено в черзі цього браузера. Надсилання повториться автоматично після відновлення інтернету."}
 }
-repeatTestBtn.addEventListener("click",resetParticipantProgress);resultHome.addEventListener("click",()=>{resultModal.classList.remove("show");showView("home")});
+repeatTestBtn.addEventListener("click",resetParticipantProgress);resultHome.addEventListener("click",()=>{resultModal.classList.remove("show");showView(publicEndReached()?"ended":"home")});
 
 /* Соцмережі */
 function socialIcon(name){
@@ -566,8 +594,10 @@ updateTestControls();
 restorePersistedSession();
 window.addEventListener("online",()=>{warningToast.textContent="Інтернет відновлено. Перевіряємо чергу результатів…";warningToast.classList.add("show");flushPendingResults(Boolean(resultModal.classList.contains("show"))).finally(()=>setTimeout(()=>warningToast.classList.remove("show"),4500))});
 window.addEventListener("offline",()=>{warningToast.textContent="Немає інтернету. Збережені відповіді залишаються на цьому пристрої.";warningToast.classList.add("show")});
-window.addEventListener("pagehide",()=>{if(activeExamStage())saveExamSession()});document.addEventListener("visibilitychange",()=>{if(document.hidden&&activeExamStage())saveExamSession()});
-if(pendingResults().length){app.stage=4;syncExamMode();resultGrid.innerHTML='<div class="result"><span>Результат</span><br><strong>Очікує надсилання</strong></div>';deliveryState.className="delivery-state";deliveryState.textContent="Знайдено ненадісланий результат. Повторюємо надсилання автоматично.";resultModal.classList.add("show");flushPendingResults(true)}
+window.addEventListener("pagehide",()=>{if(activeExamStage())saveExamSession()});document.addEventListener("visibilitychange",()=>{if(document.hidden&&activeExamStage())saveExamSession();if(!document.hidden)applyPublicPhase()});
+window.addEventListener('focus',()=>applyPublicPhase());
+if(pendingResults().length&&!publicEndReached()){app.stage=4;syncExamMode();resultGrid.innerHTML='<div class="result"><span>Результат</span><br><strong>Очікує надсилання</strong></div>';deliveryState.className="delivery-state";deliveryState.textContent="Знайдено ненадісланий результат. Повторюємо надсилання автоматично.";resultModal.classList.add("show");flushPendingResults(true)}
+else if(pendingResults().length){flushPendingResults(false)}
 
 /* Публічні налаштування із Google Sheets */
 (async()=>{
