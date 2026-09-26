@@ -79,6 +79,7 @@ a{color:inherit}
 .post-event-footer{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:30px;margin-top:16px;padding:28px 32px}
 .post-event-footer h2{margin-bottom:0}
 .post-event-footer p{color:var(--muted);line-height:1.6;margin:0}
+.post-event-only[hidden]{display:none!important}
 body.test-ended [data-nav="home"],body.test-ended [data-nav="register"],body.test-ended [data-nav="login"],body.test-ended #mobileSupport{display:none!important}
 body.test-ended .mobile-nav{grid-template-columns:repeat(2,1fr)}
 @media(max-width:850px){.post-event-grid{grid-template-columns:1fr}.post-event-footer{grid-template-columns:1fr}.post-event-hero{padding:30px 24px}.post-event-actions .btn{width:100%}}
