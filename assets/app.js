@@ -19,6 +19,8 @@ const STORAGE=Object.fromEntries(Object.entries({
   answerTimes:"probne_nmt_answer_times_v38",
   pendingResults:"probne_nmt_pending_results_v39",
   submissionId:"probne_nmt_submission_id_v39",
+  registrationId:"probne_nmt_registration_id_v1",
+  attribution:"probne_nmt_attribution_v1",
   visited:"probne_nmt_visited_v4",
   flagged:"probne_nmt_flagged_v4"
 }).map(([name,key])=>[name,STORAGE_PREFIX+key]));
@@ -127,6 +129,23 @@ async function api(payload){
 }
 
 function safeParse(value,fallback){try{return JSON.parse(value)}catch(error){return fallback}}
+const UTM_KEYS=["utm_source","utm_medium","utm_campaign","utm_content","utm_term"];
+function captureAttribution(){
+  const stored=safeParse(localStorage.getItem(STORAGE.attribution)||"{}",{}),params=new URLSearchParams(location.search),incoming={};
+  UTM_KEYS.forEach(key=>{const value=params.get(key);if(value)incoming[key]=value.slice(0,200)});
+  if(!stored.first)stored.first={...incoming,initial_referrer:(document.referrer||"").slice(0,500),initial_landing_page:location.href.slice(0,500)};
+  if(Object.keys(incoming).length)stored.last={...incoming,current_referrer:(document.referrer||"").slice(0,500),landing_page:location.href.slice(0,500)};
+  localStorage.setItem(STORAGE.attribution,JSON.stringify(stored));return stored
+}
+const ATTRIBUTION=captureAttribution();
+function attributionPayload(){const first=ATTRIBUTION.first||{},last=ATTRIBUTION.last||first;return {first_utm_source:first.utm_source||"",first_utm_medium:first.utm_medium||"",first_utm_campaign:first.utm_campaign||"",first_utm_content:first.utm_content||"",first_utm_term:first.utm_term||"",last_utm_source:last.utm_source||"",last_utm_medium:last.utm_medium||"",last_utm_campaign:last.utm_campaign||"",last_utm_content:last.utm_content||"",last_utm_term:last.utm_term||"",initial_referrer:first.initial_referrer||"",initial_landing_page:first.initial_landing_page||""}}
+function eventRegistrationId(){return app.user?.registration_id||localStorage.getItem(STORAGE.registrationId)||""}
+function logEvent(eventName,eventCategory,target){
+  const registrationId=eventRegistrationId();if(!registrationId||!CONFIG.SHEETS_ENDPOINT)return;
+  const last=ATTRIBUTION.last||ATTRIBUTION.first||{},payload={action:"logEvent",registration_id:registrationId,event_name:eventName,event_category:eventCategory||"engagement",target:String(target||"").slice(0,200),page:location.pathname,utm_source:last.utm_source||"",utm_medium:last.utm_medium||"",utm_campaign:last.utm_campaign||"",utm_content:last.utm_content||""},body=JSON.stringify(payload);
+  if(navigator.sendBeacon){navigator.sendBeacon(CONFIG.SHEETS_ENDPOINT,new Blob([body],{type:"text/plain;charset=utf-8"}));return}
+  fetch(CONFIG.SHEETS_ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body,keepalive:true,mode:"no-cors"}).catch(()=>{});
+}
 function pendingResults(){return safeParse(localStorage.getItem(STORAGE.pendingResults)||"[]",[])}
 function savePendingResults(items){if(items.length)localStorage.setItem(STORAGE.pendingResults,JSON.stringify(items));else localStorage.removeItem(STORAGE.pendingResults)}
 function createSubmissionId(){return crypto.randomUUID?crypto.randomUUID():"sub-"+Date.now()+"-"+Math.random().toString(36).slice(2)}
@@ -229,13 +248,15 @@ document.getElementById("registrationForm").addEventListener("submit",async e=>{
     email:regEmail.value.trim(),
     grade:regGrade.value,
     city:regCity.value.trim(),
-    createdAt:new Date().toISOString()
+    createdAt:new Date().toISOString(),
+    ...attributionPayload()
   };
   const submitButton=e.currentTarget.querySelector('button[type="submit"]');
   const submitLabel=submitButton.textContent;submitButton.disabled=true;submitButton.textContent="Генеруємо доступ…";
   try{
     if(CONFIG.SHEETS_ENDPOINT){
       const res=await api(p);
+      if(res.registration_id){localStorage.setItem(STORAGE.registrationId,res.registration_id);logEvent("registration_success","registration","form")}
       box.className="status ok show";
       box.innerHTML=`Реєстрацію отримано.<br><b>Логін:</b> ${esc(res.login)} &nbsp; <b>Пароль:</b> ${esc(res.password)}<br><span style="font-size:12px">Збережіть ці дані: пароль повторно не показується.</span>`;e.target.reset();
     }else{
@@ -271,7 +292,7 @@ loginForm.addEventListener("submit",async e=>{
     }
     if(!user) throw new Error("Невірний логін або пароль.");
     if(user.testAccess!==true&&Date.now()<EXAM_SCHEDULE.login)throw new Error('Вхід відкриється 3 жовтня о 09:00 за київським часом.');
-    app.user=user;updateTestControls();
+    app.user=user;if(user.registration_id)localStorage.setItem(STORAGE.registrationId,user.registration_id);logEvent("login_success","exam","participant_login");updateTestControls();
     saveExamSession();
     lobbyName.textContent=user.name||user.login||"Учасник";
     box.className="status ok show";box.textContent="Вхід успішний.";
@@ -294,6 +315,7 @@ startTestBtn.addEventListener("click",()=>{
   // If session 1 is finished early, the break lasts until the planned 12:20 point.
   app.stage2StartsAt=isTestUser()?app.stageStartedAt+(120+20)*60*1000:EXAM_SCHEDULE.secondStart;
   app.warned={};
+  logEvent("test_start","exam","stage_1");
   syncExamMode();saveExamSession();armExamGuard();
   startStageTimer();showView("exam");updateSubjects();renderQuestion();
 });
@@ -335,6 +357,7 @@ function startStageTimer(){
   update();app.timerId=setInterval(update,1000);
 }
 function startBreak(automatic=false){
+  logEvent("stage_complete","exam",automatic?"stage_1_automatic":"stage_1_manual");
   app.stage=2;clearInterval(app.timerId);syncExamMode();saveExamSession();breakModal.classList.add("show");
   app.stage2StartsAt=Math.max(app.stage2StartsAt||0,Date.now()+1000);
   const update=()=>{app.breakSeconds=Math.max(0,Math.ceil((app.stage2StartsAt-Date.now())/1000));breakTimerText.textContent=fmtTime(app.breakSeconds);if(app.breakSeconds<=0){clearInterval(app.breakId);beginStage2()}};
@@ -344,7 +367,7 @@ function beginStage2(){
   if(!app.user||(!isTestUser()&&Date.now()<EXAM_SCHEDULE.secondStart))return;
   clearInterval(app.breakId);breakModal.classList.remove("show");app.stage=3;app.subject="history";app.questionIndex=0;
   app.stageStartedAt=Date.now();if(!app.attemptStartedAt)app.attemptStartedAt=app.stageStartedAt;app.stageEndsAt=isTestUser()?app.stageStartedAt+7200*1000:EXAM_SCHEDULE.end;app.warned={};
-  syncExamMode();saveExamSession();armExamGuard();updateSubjects();startStageTimer();renderQuestion();showView("exam");
+  logEvent("test_start","exam","stage_2");syncExamMode();saveExamSession();armExamGuard();updateSubjects();startStageTimer();renderQuestion();showView("exam");
 }
 skipBreakBtn.addEventListener("click",()=>{if(isTestUser())beginStage2()});
 startStage2TestBtn.addEventListener("click",()=>{if(!isTestUser())return;if(!rulesAgree.checked){alert("Спочатку підтвердьте, що ознайомилися з правилами.");return}beginStage2()});
@@ -423,7 +446,7 @@ function readAnswer(){
 }
 function saveCurrentAnswer(show=true){
   if(!(app.stage===1||app.stage===3)||!QUESTION_BANK[app.subject]?.length)return;
-  const v=readAnswer(),key=keyFor(app.subject,app.questionIndex);app.answers[key]=v;app.answerTimes[key]=new Date().toISOString();localStorage.setItem(STORAGE.answers,JSON.stringify(app.answers));localStorage.setItem(STORAGE.answerTimes,JSON.stringify(app.answerTimes));saveExamSession();
+  const v=readAnswer(),key=keyFor(app.subject,app.questionIndex);app.answers[key]=v;app.answerTimes[key]=new Date().toISOString();localStorage.setItem(STORAGE.answers,JSON.stringify(app.answers));localStorage.setItem(STORAGE.answerTimes,JSON.stringify(app.answerTimes));saveExamSession();logEvent("answer_save","exam",app.subject+":"+(app.questionIndex+1));
   if(show){savedMessage.classList.add("show");setTimeout(()=>savedMessage.classList.remove("show"),1400)}renderPalette();
 }
 saveAnswerBtn.addEventListener("click",()=>saveCurrentAnswer(true));
@@ -482,7 +505,7 @@ async function finishWholeTest(automatic=false){
   resultGrid.innerHTML='<div class="result"><span>Результат</span><br><strong>Надсилаємо…</strong></div>';
   deliveryState.className="delivery-state";deliveryState.textContent="Не закривайте сторінку до підтвердження збереження. Якщо інтернет зникне, результат залишиться в локальній черзі.";
   resultModal.classList.add("show");
-  const payload=buildResultPayload();queueResult(payload);
+  const payload=buildResultPayload();queueResult(payload);logEvent("test_complete","exam",automatic?"automatic":"manual");
   const sent=await flushPendingResults(true);
   if(sent){localStorage.removeItem(STORAGE.session)}
   else{deliveryState.className="delivery-state";deliveryState.textContent="Результат надійно збережено в черзі цього браузера. Надсилання повториться автоматично після відновлення інтернету."}
@@ -502,6 +525,21 @@ function renderSocials(settings=getLocalSettings()){
   otherSocials.innerHTML=socialButton("telegram","Telegram Lessons for You",o.telegram)+socialButton("tiktok","TikTok Lessons for You",o.tiktok)+socialButton("site","Сайт Lessons for You",o.site)+socialButton("instagram","Instagram Lessons for You",o.instagram);
 }
 renderSocials();
+
+document.addEventListener("click",event=>{
+  const control=event.target.closest("button,a");if(!control||!eventRegistrationId())return;
+  const href=control.getAttribute("href")||"",nav=control.dataset.nav||"",target=control.id||nav||href||control.textContent.trim().slice(0,80);
+  let eventName="ui_click",category="navigation";
+  if(control.id==="mobileSupport"){eventName="support_click";category="support"}
+  else if(nav==="tutors"){eventName="preparation_open";category="preparation"}
+  else if(/t\.me\/kolisnyk_academy/.test(href)){eventName="kolisnyk_telegram_click";category="social"}
+  else if(/instagram\.com\/kolisnyk_academy/.test(href)){eventName="kolisnyk_instagram_click";category="social"}
+  else if(/tiktok\.com\/@kolisnyk_academy/.test(href)){eventName="kolisnyk_tiktok_click";category="social"}
+  else if(/t\.me\/lessons4you/.test(href)){eventName="lessons4you_telegram_click";category="social"}
+  else if(/instagram\.com\/lessons\.4\.you/.test(href)){eventName="lessons4you_instagram_click";category="social"}
+  else if(/tiktok\.com\/@lessons\.4\.you/.test(href)){eventName="lessons4you_tiktok_click";category="social"}
+  logEvent(eventName,category,target);
+});
 
 /* Прихований вхід в адмінку: 6 кліків по номеру версії або Ctrl+Shift+K.
    Це лише приховує точку входу. Реальний захист має бути серверним. */
