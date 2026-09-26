@@ -60,12 +60,18 @@ function genericQuestion(subject,n,type){
 
 const QUESTION_BANK=IMPORTED_EXAMS;
 
-function updatePublicCountdown(){
-  const deadline=new Date(CONFIG.DEFAULT_DEADLINE+":00+03:00").getTime();const diff=Math.max(0,deadline-Date.now());
-  const parts={days:Math.floor(diff/86400000),hours:Math.floor((diff%86400000)/3600000),minutes:Math.floor((diff%3600000)/60000),seconds:Math.floor((diff%60000)/1000)};
+const LOCAL_TIME_PREVIEW=/^(localhost|127\.0\.0\.1)$/.test(location.hostname)?new URLSearchParams(location.search).get("previewTime"):null;
+const LOCAL_TIME_OFFSET=LOCAL_TIME_PREVIEW?Date.parse(LOCAL_TIME_PREVIEW)-Date.now():0;
+function siteNow(){return Date.now()+LOCAL_TIME_OFFSET}
+function countdownParts(target,now=siteNow()){
+  const diff=Math.max(0,target-now);
+  return {days:Math.floor(diff/86400000),hours:Math.floor((diff%86400000)/3600000),minutes:Math.floor((diff%3600000)/60000),seconds:Math.floor((diff%60000)/1000)};
+}
+function paintCountdown(target){
+  const parts=countdownParts(target);
   Object.entries(parts).forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.textContent=String(value).padStart(2,"0")});
 }
-updatePublicCountdown();setInterval(updatePublicCountdown,1000);
+function compactCountdown(target){const x=countdownParts(target);return [x.days?`${x.days} дн`:"",`${String(x.hours).padStart(2,"0")}:${String(x.minutes).padStart(2,"0")}:${String(x.seconds).padStart(2,"0")}`].filter(Boolean).join(" ")}
 
 function readStoredSession(){try{return JSON.parse(localStorage.getItem(STORAGE.session)||"null")}catch(e){return null}}
 const persistedSession=readStoredSession();
@@ -89,6 +95,8 @@ const app={
 
 
 const EXAM_SCHEDULE={login:Date.parse('2026-10-03T09:00:00+03:00'),start:Date.parse('2026-10-03T10:00:00+03:00'),firstEnd:Date.parse('2026-10-03T12:00:00+03:00'),secondStart:Date.parse('2026-10-03T12:20:00+03:00'),end:Date.parse('2026-10-03T14:20:00+03:00')};
+const REGISTRATION_DEADLINE=Date.parse('2026-10-02T23:59:00+03:00');
+const EXAM_DAY_START=Date.parse('2026-10-03T00:00:00+03:00');
 const PUBLIC_END_SCREEN_AT=Date.parse('2026-10-03T14:20:30+03:00');
 function isTestUser(){return app.user?.testAccess===true}
 function updateTestControls(){document.querySelectorAll('[data-test-control]').forEach(button=>{button.hidden=!isTestUser()})}
@@ -198,7 +206,7 @@ function renderArchivePages(){
 document.querySelectorAll(".archive-block").forEach(x=>x.addEventListener("toggle",()=>{if(x.open)renderArchivePages()}));
 }
 document.querySelectorAll("[data-nav]").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.nav)));
-function publicEndReached(now=Date.now()){return now>=PUBLIC_END_SCREEN_AT}
+function publicEndReached(now=siteNow()){return now>=PUBLIC_END_SCREEN_AT}
 let publicEndTransitionRunning=false;
 function applyPublicPhase(now=Date.now()){
   const ended=publicEndReached(now);
@@ -216,12 +224,63 @@ function applyPublicPhase(now=Date.now()){
   return true;
 }
 function schedulePublicPhase(){
-  const delay=PUBLIC_END_SCREEN_AT-Date.now();
+  const delay=PUBLIC_END_SCREEN_AT-siteNow();
   if(delay<=0){applyPublicPhase();return}
   setTimeout(schedulePublicPhase,Math.min(delay+50,2147483647));
 }
+function setText(id,value){const element=document.getElementById(id);if(element)element.textContent=value}
+function setQuick(items){items.forEach((item,index)=>{setText(`quickTitle${index+1}`,item[0]);setText(`quickText${index+1}`,item[1])})}
+function updateLobbyAvailability(now=siteNow()){
+  if(!startTestBtn||!lobbyCountdown)return;
+  let label="Почати тестування",message="",available=rulesAgree.checked;
+  if(now<EXAM_SCHEDULE.start){label=`Почати через ${compactCountdown(EXAM_SCHEDULE.start)}`;message=`Тест почнеться о 10:00. До старту залишилося ${compactCountdown(EXAM_SCHEDULE.start)}.`;available=false}
+  else if(now<EXAM_SCHEDULE.firstEnd){label="Почати першу сесію";message="Перша сесія вже доступна."}
+  else if(now<EXAM_SCHEDULE.secondStart){label=`Друга сесія через ${compactCountdown(EXAM_SCHEDULE.secondStart)}`;message="Перша сесія завершена. Зараз триває перерва до 12:20.";available=rulesAgree.checked}
+  else if(now<EXAM_SCHEDULE.end){label="Почати другу сесію";message="Друга сесія вже доступна."}
+  else{label="Тестування завершено";message="Час тестування завершився о 14:20.";available=false}
+  startTestBtn.textContent=label;startTestBtn.disabled=!available;
+  lobbyCountdown.hidden=false;lobbyCountdown.textContent=message;
+}
+function updateLoginAvailability(now=siteNow()){
+  if(!loginForm||!loginCountdown||!sessionStatus)return;
+  const open=now>=EXAM_SCHEDULE.login&&now<EXAM_SCHEDULE.end;
+  loginForm.hidden=!open;
+  loginCountdown.hidden=open;
+  if(now<EXAM_SCHEDULE.login){
+    sessionStatus.innerHTML='<strong>Вхід відкриється о 09:00</strong><span>Тест почнеться о 10:00 за київським часом.</span>';
+    loginCountdown.textContent=`До початку тесту: ${compactCountdown(EXAM_SCHEDULE.start)} · Увійти можна буде через ${compactCountdown(EXAM_SCHEDULE.login)}.`;
+  }else if(now<EXAM_SCHEDULE.start){sessionStatus.innerHTML='<strong>Вхід уже відкрито</strong><span>Увійди, прочитай правила та очікуй початку тесту о 10:00.</span>'}
+  else if(now<EXAM_SCHEDULE.end){sessionStatus.innerHTML='<strong>Тестування вже триває</strong><span>Увійди за персональними даними, щоб перейти до доступної сесії.</span>'}
+  else{sessionStatus.innerHTML='<strong>Тестування завершено</strong><span>Пробний мультитест завершився о 14:20.</span>'}
+}
+function updateScheduledExperience(now=siteNow()){
+  const registerButtons=document.querySelectorAll('[data-nav="register"]');
+  const homeRegister=document.getElementById('homeRegisterBtn'),homeLogin=document.getElementById('homeLoginBtn');
+  document.body.classList.toggle('registration-closed',now>REGISTRATION_DEADLINE);
+  registerButtons.forEach(button=>{button.hidden=now>REGISTRATION_DEADLINE});
+  document.querySelectorAll('.exam-day-only').forEach(button=>{button.hidden=now<=REGISTRATION_DEADLINE||now>=PUBLIC_END_SCREEN_AT});
+  if(homeLogin){homeLogin.hidden=now<EXAM_DAY_START||now>=PUBLIC_END_SCREEN_AT;homeLogin.classList.toggle('primary',now>=EXAM_DAY_START);homeLogin.classList.toggle('ghost',now<EXAM_DAY_START)}
+  if(now<=REGISTRATION_DEADLINE){
+    setText('homeEyebrow','Пробний мультитест 2026');setText('homeTitle','НМТ буде 3 жовтня о 10:00');setText('homeLead','Перевір знання, відчуй темп тестування та спокійніше зайди в реальний іспит. Чотири предмети, два етапи та формат, наближений до НМТ.');setText('homePhaseLabel','Реєстрація відкрита до');setText('homePhaseValue','2 жовтня 2026 · 23:59');paintCountdown(REGISTRATION_DEADLINE);setQuick([['Заповнити реєстрацію','Телефон і актуальний Telegram обов’язкові.'],['Дочекатися підтвердження','Усю важливу інформацію надішлемо за вказаними контактами.'],['Увійти 3 жовтня','Для кожного учасника буде персональний доступ.']]);
+  }else if(now<EXAM_SCHEDULE.login){
+    setText('homeEyebrow','Сьогодні · 3 жовтня 2026');setText('homeTitle','Сьогодні — пробний НМТ');setText('homeLead','Тест почнеться о 10:00 за київським часом. Увійти до особистого кабінету можна буде вже о 09:00.');setText('homePhaseLabel','До початку мультитесту');setText('homePhaseValue',`Вхід відкриється о 09:00 — через ${compactCountdown(EXAM_SCHEDULE.login)}`);paintCountdown(EXAM_SCHEDULE.start);setQuick([['Підготувати логін і пароль','Персональні дані були видані після реєстрації.'],['Увійти з 09:00','Вхід відкриється за годину до початку.'],['Почати о 10:00','Кнопка старту активується автоматично.']]);
+  }else if(now<EXAM_SCHEDULE.start){
+    setText('homeEyebrow','Вхід відкрито');setText('homeTitle','Увійди перед початком');setText('homeLead','Увійди до кабінету, прочитай правила та підтвердь готовність. Розпочати тест можна буде рівно о 10:00.');setText('homePhaseLabel','До початку тесту');setText('homePhaseValue','Кнопка старту активується о 10:00');paintCountdown(EXAM_SCHEDULE.start);setQuick([['Увійти до кабінету','Використай персональні логін і пароль.'],['Прочитати правила','Підтверди ознайомлення галочкою.'],['Дочекатися 10:00','Таймер покаже точний час до старту.']]);
+  }else if(now<EXAM_SCHEDULE.firstEnd){
+    setText('homeEyebrow','Перший етап триває');setText('homeTitle','Українська мова та математика');setText('homeLead','Перший етап уже розпочався. Увійди до кабінету, щоб продовжити тестування.');setText('homePhaseLabel','До завершення першого етапу');setText('homePhaseValue','О 12:00 етап завершиться автоматично');paintCountdown(EXAM_SCHEDULE.firstEnd);setQuick([['Увійти до кабінету','Час першого етапу вже спливає.'],['Виконати два предмети','Українська мова та математика.'],['Завершити до 12:00','Після цього відповіді першого етапу змінити не можна.']]);
+  }else if(now<EXAM_SCHEDULE.secondStart){
+    setText('homeEyebrow','Перерва');setText('homeTitle','Перерва до 12:20');setText('homeLead','Перший етап завершено. Відпочинь перед історією України та англійською мовою.');setText('homePhaseLabel','Другий етап почнеться через');setText('homePhaseValue','Повернутися до першого етапу вже неможливо');paintCountdown(EXAM_SCHEDULE.secondStart);setQuick([['Перший етап завершено','Відповіді збережено.'],['Відпочити до 12:20','Не закривай сторінку тестування.'],['Почати другу сесію','Вона відкриється автоматично.']]);
+  }else if(now<EXAM_SCHEDULE.end){
+    setText('homeEyebrow','Другий етап триває');setText('homeTitle','Історія України та англійська');setText('homeLead','Другий етап уже розпочався. Увійди до кабінету, щоб завершити мультитест.');setText('homePhaseLabel','До завершення мультитесту');setText('homePhaseValue','О 14:20 тест завершиться автоматично');paintCountdown(EXAM_SCHEDULE.end);setQuick([['Увійти до кабінету','Час другого етапу вже спливає.'],['Виконати два предмети','Історія України та англійська мова.'],['Завершити до 14:20','Перевір відповіді перед завершенням.']]);
+  }else{
+    setText('homeEyebrow','Завершення');setText('homeTitle','Завершуємо мультитест');setText('homeLead','Час вийшов. Зберігаємо відповіді та формуємо результат.');setText('homePhaseLabel','Будь ласка, зачекай');setText('homePhaseValue','Не закривай сторінку ще кілька секунд');paintCountdown(PUBLIC_END_SCREEN_AT);
+  }
+  if(homeRegister)homeRegister.disabled=now>REGISTRATION_DEADLINE;
+  updateLoginAvailability(now);updateLobbyAvailability(now);applyPublicPhase(now);
+}
 document.getElementById("brandHome").addEventListener("click",()=>{if(activeExamStage()&&!publicEndReached()){alert("Спочатку завершіть активний етап тестування.");return}showView(publicEndReached()?"ended":"home")});
-applyPublicPhase();
+updateScheduledExperience();
+setInterval(updateScheduledExperience,1000);
 schedulePublicPhase();
 
 function validTelegram(v){return /^@[A-Za-z0-9_]{5,32}$/.test(v.trim())}
@@ -291,7 +350,7 @@ loginForm.addEventListener("submit",async e=>{
       else user=getLocalParticipants().find(x=>x.login===login&&x.password===password);
     }
     if(!user) throw new Error("Невірний логін або пароль.");
-    if(user.testAccess!==true&&Date.now()<EXAM_SCHEDULE.login)throw new Error('Вхід відкриється 3 жовтня о 09:00 за київським часом.');
+    if(user.testAccess!==true&&siteNow()<EXAM_SCHEDULE.login)throw new Error('Вхід відкриється 3 жовтня о 09:00 за київським часом.');
     app.user=user;if(user.registration_id)localStorage.setItem(STORAGE.registrationId,user.registration_id);logEvent("login_success","exam","participant_login");updateTestControls();
     saveExamSession();
     lobbyName.textContent=user.name||user.login||"Учасник";
@@ -304,9 +363,9 @@ startTestBtn.addEventListener("click",()=>{
   if(!rulesAgree.checked){alert("Спочатку підтвердьте, що ознайомилися з правилами.");return}
   if(!app.user)return;
   if(!isTestUser()){
-    if(Date.now()<EXAM_SCHEDULE.start){alert('Тестування почнеться 3 жовтня о 10:00 за київським часом.');return}
-    if(Date.now()>=EXAM_SCHEDULE.end){alert('Тестування завершено.');return}
-    if(Date.now()>=EXAM_SCHEDULE.firstEnd){app.stage2StartsAt=EXAM_SCHEDULE.secondStart;syncExamMode();showView('exam');if(Date.now()>=EXAM_SCHEDULE.secondStart)beginStage2();else startBreak();return}
+    if(siteNow()<EXAM_SCHEDULE.start){alert('Тестування почнеться 3 жовтня о 10:00 за київським часом.');return}
+    if(siteNow()>=EXAM_SCHEDULE.end){alert('Тестування завершено.');return}
+    if(siteNow()>=EXAM_SCHEDULE.firstEnd){app.stage2StartsAt=EXAM_SCHEDULE.secondStart;syncExamMode();showView('exam');if(siteNow()>=EXAM_SCHEDULE.secondStart)beginStage2();else startBreak();return}
   }
   app.stage=1;app.subject="math";app.questionIndex=0;
   app.stageStartedAt=Date.now();
@@ -540,6 +599,7 @@ document.addEventListener("click",event=>{
   else if(/tiktok\.com\/@lessons\.4\.you/.test(href)){eventName="lessons4you_tiktok_click";category="social"}
   logEvent(eventName,category,target);
 });
+rulesAgree.addEventListener("change",()=>updateLobbyAvailability());
 
 /* Прихований вхід в адмінку: 6 кліків по номеру версії або Ctrl+Shift+K.
    Це лише приховує точку входу. Реальний захист має бути серверним. */

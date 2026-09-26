@@ -6,7 +6,7 @@
 <title>Пробний мультитест — Kolisnyk Academy × Lessons for You</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=1">
 <meta name="description" content="Пробний НМТ у форматі, наближеному до реального тестувальника: реєстрація, персональний доступ, 2 етапи, 20-хвилинна перерва та 4 предмети.">
-<link rel="stylesheet" href="assets/styles.css?v=48">
+<link rel="stylesheet" href="assets/styles.css?v=50">
 <!-- Microsoft Clarity -->
 <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
@@ -27,6 +27,7 @@
 <button data-nav="ended" class="post-event-only" hidden>Завершити тест</button>
 <button data-nav="home" class="active">Головна</button>
 <button data-nav="register">Реєстрація</button>
+<button data-nav="login" class="exam-day-only" hidden>Вхід</button>
 <button data-nav="tutors">Підготовка</button>
 <a id="mobileSupport" href="https://t.me/kolisnyk_academy" target="_blank" rel="noopener">Допомога</a>
 </nav>
@@ -36,11 +37,11 @@
 <section id="home" class="section active">
 <div class="hero">
 <div class="card">
-<div class="eyebrow">Пробний мультитест 2026</div>
-<h1>НМТ буде 3 жовтня о 10:00</h1>
-<p class="lead">Перевір знання, відчуй темп тестування та спокійніше зайди в реальний іспит. Чотири предмети, два етапи та формат, наближений до НМТ.</p>
+<div class="eyebrow" id="homeEyebrow">Пробний мультитест 2026</div>
+<h1 id="homeTitle">НМТ буде 3 жовтня о 10:00</h1>
+<p class="lead" id="homeLead">Перевір знання, відчуй темп тестування та спокійніше зайди в реальний іспит. Чотири предмети, два етапи та формат, наближений до НМТ.</p>
 <div class="collabline"><b>Пробний мультитест від Kolisnyk Academy × Lessons for You.</b><br>Математика — Kolisnyk Academy. Українська мова, історія України та англійська — Lessons for You.</div>
-<div class="datebox"><span>Реєстрація відкрита до</span><b>2 жовтня 2026 · 23:59</b>
+<div class="datebox" id="homePhaseBox"><span id="homePhaseLabel">Реєстрація відкрита до</span><b id="homePhaseValue">2 жовтня 2026 · 23:59</b>
 <div class="countdown" id="countdown">
 <div class="count"><strong id="days">00</strong><span>днів</span></div>
 <div class="count"><strong id="hours">00</strong><span>годин</span></div>
@@ -48,15 +49,15 @@
 <div class="count"><strong id="seconds">00</strong><span>секунд</span></div>
 </div></div>
 <div class="schedule"><div><strong>10:00–12:00</strong><span>Перша сесія: українська мова + математика</span></div><div><strong>12:00–12:20</strong><span>Перерва. Якщо завершиш раніше — відпочиваєш до 12:20</span></div><div><strong>12:20–14:20</strong><span>Друга сесія: історія України + англійська</span></div></div>
-<div class="actions"><button class="btn primary" data-nav="register">Зареєструватися</button><button class="btn ghost" data-nav="login">Увійти до кабінету</button><button class="btn ghost" data-nav="tutors" data-prep-target="mathPrep"  >Підготовка: Kolisnyk Academy</button><button class="btn ghost" data-nav="tutors" data-prep-target="otherPrep"  >Підготовка: Lessons for You</button></div>
+<div class="actions"><button id="homeRegisterBtn" class="btn primary" data-nav="register">Зареєструватися</button><button id="homeLoginBtn" class="btn ghost" data-nav="login">Увійти до кабінету</button><button class="btn ghost" data-nav="tutors" data-prep-target="mathPrep">Підготовка: Kolisnyk Academy</button><button class="btn ghost" data-nav="tutors" data-prep-target="otherPrep">Підготовка: Lessons for You</button></div>
 </div>
 
 <div class="card">
 <div class="eyebrow">Участь</div><h2>Що потрібно зробити</h2>
 <div class="quick">
-<div class="quickrow"><span class="quickicon">1</span><div><b>Заповнити реєстрацію</b><span>Телефон і актуальний Telegram обов'язкові.</span></div></div>
-<div class="quickrow"><span class="quickicon">2</span><div><b>Дочекатися підтвердження</b><span>Усю важливу інформацію надішлемо за вказаними контактами.</span></div></div>
-<div class="quickrow"><span class="quickicon">3</span><div><b>Увійти 3 жовтня</b><span>Для кожного учасника буде персональний доступ.</span></div></div>
+<div class="quickrow"><span class="quickicon">1</span><div><b id="quickTitle1">Заповнити реєстрацію</b><span id="quickText1">Телефон і актуальний Telegram обов'язкові.</span></div></div>
+<div class="quickrow"><span class="quickicon">2</span><div><b id="quickTitle2">Дочекатися підтвердження</b><span id="quickText2">Усю важливу інформацію надішлемо за вказаними контактами.</span></div></div>
+<div class="quickrow"><span class="quickicon">3</span><div><b id="quickTitle3">Увійти 3 жовтня</b><span id="quickText3">Для кожного учасника буде персональний доступ.</span></div></div>
 </div>
 <div class="support"><p><b>Є питання або щось не працює?</b><br>Напиши нам у Telegram — допоможемо.</p><a id="supportHome" class="btn soft" href="https://t.me/kolisnyk_academy" target="_blank" rel="noopener">Написати в Telegram</a></div>
 </div>
@@ -145,6 +146,7 @@
 <div class="card login">
 <div class="eyebrow">3 жовтня 2026</div><h2>Вхід для учасників</h2><p class="lead" style="font-size:16px">Вхід для учасників буде доступний з 09:00 3 жовтня. Увійди завчасно — тест починається о 10:00.</p>
 <div id="sessionStatus" class="sessionbox" aria-live="polite"><strong>Вхід для зареєстрованих учасників</strong><span>Використай персональні логін і пароль, отримані після реєстрації.</span></div>
+  <div id="loginCountdown" class="phase-countdown" hidden aria-live="polite"></div>
   <form id="loginForm" style="margin-top:18px">
     <div class="field"><label for="loginInput">Логін</label><input id="loginInput" required autocomplete="username" placeholder="Введіть логін"></div>
     <div class="field" style="margin-top:14px"><label for="passwordInput">Пароль</label><input id="passwordInput" type="password" required autocomplete="current-password" placeholder="Введіть пароль"></div>
@@ -184,6 +186,7 @@
     <button id="startStage2TestBtn" hidden data-test-control class="btn ghost" type="button">Одразу відкрити другу сесію</button>
     <button id="resetProgressBtn" hidden data-test-control class="btn soft" type="button">Скинути мій прогрес</button>
   </div>
+  <div id="lobbyCountdown" class="phase-countdown" hidden aria-live="polite"></div>
 </div>
       </div>
     </div>
@@ -376,7 +379,7 @@
 
 <div id="warningToast" class="warning-toast" role="status" aria-live="assertive"></div>
 <script src="assets/exam-data.js?v=45"></script>
-<script src="assets/app.js?v=48"></script>
+<script src="assets/app.js?v=50"></script>
 
 </body>
 </html>
