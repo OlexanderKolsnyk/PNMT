@@ -190,7 +190,7 @@ function saveExamSession(){
 }
 function armExamGuard(){if(activeExamStage()&&!history.state?.examGuard)history.pushState({examGuard:true},"",location.href)}
 function showView(id){
-  if(publicEndReached()&&!['ended','tutors'].includes(id))id='ended';
+  if(publicEndReached()&&!['ended','tutors','login'].includes(id))id='ended';
   if(activeExamStage()&&id!=="exam"&&!publicEndReached())return;
   app.view=id;
   if(id==='ended'||id==='tutors')document.getElementById('resultModal')?.classList.remove('show');
@@ -206,7 +206,7 @@ function renderArchivePages(){
 document.querySelectorAll(".archive-block").forEach(x=>x.addEventListener("toggle",()=>{if(x.open)renderArchivePages()}));
 }
 document.querySelectorAll("[data-nav]").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.nav)));
-function publicEndReached(now=siteNow()){return now>=PUBLIC_END_SCREEN_AT}
+function publicEndReached(now=siteNow()){return now>=PUBLIC_END_SCREEN_AT&&!isTestUser()}
 let publicEndTransitionRunning=false;
 function applyPublicPhase(now=Date.now()){
   const ended=publicEndReached(now);
@@ -232,6 +232,11 @@ function setText(id,value){const element=document.getElementById(id);if(element)
 function setQuick(items){items.forEach((item,index)=>{setText(`quickTitle${index+1}`,item[0]);setText(`quickText${index+1}`,item[1])})}
 function updateLobbyAvailability(now=siteNow()){
   if(!startTestBtn||!lobbyCountdown)return;
+  if(isTestUser()){
+    startTestBtn.textContent="Запустити першу сесію";startTestBtn.disabled=!rulesAgree.checked;
+    lobbyCountdown.hidden=false;lobbyCountdown.textContent="Тестовий доступ активний: обидві сесії можна запускати незалежно від розкладу.";
+    return;
+  }
   let label="Почати тестування",message="",available=rulesAgree.checked;
   if(now<EXAM_SCHEDULE.start){label=`Почати через ${compactCountdown(EXAM_SCHEDULE.start)}`;message=`Тест почнеться о 10:00. До старту залишилося ${compactCountdown(EXAM_SCHEDULE.start)}.`;available=false}
   else if(now<EXAM_SCHEDULE.firstEnd){label="Почати першу сесію";message="Перша сесія вже доступна."}
@@ -244,14 +249,14 @@ function updateLobbyAvailability(now=siteNow()){
 function updateLoginAvailability(now=siteNow()){
   if(!loginForm||!loginCountdown||!sessionStatus)return;
   const beforeOpen=now<EXAM_SCHEDULE.login;
-  loginForm.hidden=now>=EXAM_SCHEDULE.end;
+  loginForm.hidden=false;
   loginCountdown.hidden=!beforeOpen;
   if(now<EXAM_SCHEDULE.login){
     sessionStatus.innerHTML='<strong>Вхід відкриється о 09:00</strong><span>Тест почнеться о 10:00 за київським часом.</span>';
     loginCountdown.textContent=`До початку тесту: ${compactCountdown(EXAM_SCHEDULE.start)} · Увійти можна буде через ${compactCountdown(EXAM_SCHEDULE.login)}.`;
   }else if(now<EXAM_SCHEDULE.start){sessionStatus.innerHTML='<strong>Вхід уже відкрито</strong><span>Увійди, прочитай правила та очікуй початку тесту о 10:00.</span>'}
   else if(now<EXAM_SCHEDULE.end){sessionStatus.innerHTML='<strong>Тестування вже триває</strong><span>Увійди за персональними даними, щоб перейти до доступної сесії.</span>'}
-  else{sessionStatus.innerHTML='<strong>Тестування завершено</strong><span>Пробний мультитест завершився о 14:20.</span>'}
+  else{sessionStatus.innerHTML='<strong>Тестування завершено</strong><span>Вхід після завершення доступний лише для спеціального тестового акаунта.</span>'}
 }
 function updateScheduledExperience(now=siteNow()){
   const registerButtons=document.querySelectorAll('[data-nav="register"]');
@@ -352,6 +357,7 @@ loginForm.addEventListener("submit",async e=>{
     }
     if(!user) throw new Error("Невірний логін або пароль.");
     if(user.testAccess!==true&&beforePublicLogin)throw new Error('Вхід відкриється 3 жовтня о 09:00 за київським часом.');
+    if(user.testAccess!==true&&siteNow()>=EXAM_SCHEDULE.end)throw new Error('Тестування завершено.');
     app.user=user;if(user.registration_id)localStorage.setItem(STORAGE.registrationId,user.registration_id);logEvent("login_success","exam","participant_login");updateTestControls();
     saveExamSession();
     lobbyName.textContent=user.name||user.login||"Учасник";
