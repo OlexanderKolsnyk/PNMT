@@ -243,9 +243,9 @@ function updateLobbyAvailability(now=siteNow()){
 }
 function updateLoginAvailability(now=siteNow()){
   if(!loginForm||!loginCountdown||!sessionStatus)return;
-  const open=now>=EXAM_SCHEDULE.login&&now<EXAM_SCHEDULE.end;
-  loginForm.hidden=!open;
-  loginCountdown.hidden=open;
+  const beforeOpen=now<EXAM_SCHEDULE.login;
+  loginForm.hidden=now>=EXAM_SCHEDULE.end;
+  loginCountdown.hidden=!beforeOpen;
   if(now<EXAM_SCHEDULE.login){
     sessionStatus.innerHTML='<strong>Вхід відкриється о 09:00</strong><span>Тест почнеться о 10:00 за київським часом.</span>';
     loginCountdown.textContent=`До початку тесту: ${compactCountdown(EXAM_SCHEDULE.start)} · Увійти можна буде через ${compactCountdown(EXAM_SCHEDULE.login)}.`;
@@ -340,6 +340,7 @@ document.getElementById("registrationForm").addEventListener("submit",async e=>{
 loginForm.addEventListener("submit",async e=>{
   e.preventDefault();
   const box=loginStatus,login=loginInput.value.trim(),password=passwordInput.value;
+  const beforePublicLogin=siteNow()<EXAM_SCHEDULE.login;
   try{
     let user=null;
     if(CONFIG.SHEETS_ENDPOINT){
@@ -350,13 +351,17 @@ loginForm.addEventListener("submit",async e=>{
       else user=getLocalParticipants().find(x=>x.login===login&&x.password===password);
     }
     if(!user) throw new Error("Невірний логін або пароль.");
-    if(user.testAccess!==true&&siteNow()<EXAM_SCHEDULE.login)throw new Error('Вхід відкриється 3 жовтня о 09:00 за київським часом.');
+    if(user.testAccess!==true&&beforePublicLogin)throw new Error('Вхід відкриється 3 жовтня о 09:00 за київським часом.');
     app.user=user;if(user.registration_id)localStorage.setItem(STORAGE.registrationId,user.registration_id);logEvent("login_success","exam","participant_login");updateTestControls();
     saveExamSession();
     lobbyName.textContent=user.name||user.login||"Учасник";
     box.className="status ok show";box.textContent="Вхід успішний.";
     setTimeout(()=>showView("lobby"),300);
-  }catch(err){box.className="status err show";box.textContent=err.message}
+  }catch(err){
+    const message=beforePublicLogin?'Вхід відкриється 3 жовтня о 09:00 за київським часом.':err.message;
+    box.className="status err show";box.textContent=message;
+    if(beforePublicLogin)alert(message);
+  }
 });
 
 startTestBtn.addEventListener("click",()=>{
