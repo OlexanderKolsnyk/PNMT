@@ -503,6 +503,7 @@ function renderQuestion(){
   questionContent.classList.toggle("ukrainian-letter-highlights",app.subject==="ukrainian"&&q.number<=2);
   questionContent.classList.toggle("ukrainian-linear-options",app.subject==="ukrainian"&&q.number<=25);
   questionContent.classList.toggle("ukrainian-wide-match",app.subject==="ukrainian"&&(q.number===28||q.number===29));
+  questionContent.classList.toggle("history-cartoon-options",app.subject==="history"&&q.number===30);
   if(app.subject==="english"&&q.number>=17&&q.number<=22){const optionF=q.options.find(option=>option.id==="F");if(optionF)optionF.text="by facing challenges on your own"}
   const reading=app.subject==="english"&&q.number>=6&&q.number<=10?ENGLISH_READING_6_10:"";
   const example=app.subject==="ukrainian"&&q.number===30?'<div class="syntax-example" aria-label="Зразок подібності синтаксичного значення"><div class="syntax-example-part"><span>як? у який спосіб?</span><b>Я пишу <em>швидко</em>.</b></div><div class="syntax-example-arrow" aria-hidden="true">⇄</div><div class="syntax-example-part"><span>як? у який спосіб?</span><b>Іван грає так, <em>як його навчили</em>.</b></div></div>':"";
