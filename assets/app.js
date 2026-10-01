@@ -499,7 +499,11 @@ function renderQuestion(){
   if(!(app.stage===1||app.stage===3))return;updateSubjects();const q=QUESTION_BANK[app.subject]?.[app.questionIndex];if(!q)return;
   const key=keyFor(app.subject,app.questionIndex);app.visited[key]=true;localStorage.setItem(STORAGE.visited,JSON.stringify(app.visited));
   questionTitle.textContent=`${LABELS[app.subject]} · завдання ${q.number}`;typePill.textContent=typeName(q.type);
-  const saved=app.answers[key];questionContent.innerHTML=`<article class="question-card imported-question"><div class="source-toolbar"><b>${esc(q.source)}</b><span></span></div>${q.promptHtml}</article>${answerControls(q,saved)}`;
+  questionContent.classList.toggle("ukrainian-letter-highlights",app.subject==="ukrainian"&&q.number<=2);
+  questionContent.classList.toggle("ukrainian-linear-options",app.subject==="ukrainian"&&q.number<=25);
+  questionContent.classList.toggle("ukrainian-wide-match",app.subject==="ukrainian"&&(q.number===28||q.number===29));
+  const example=app.subject==="ukrainian"&&q.number===30?'<div class="syntax-example" aria-label="Зразок подібності синтаксичного значення"><div class="syntax-example-part"><span>як? у який спосіб?</span><b>Я пишу <em>швидко</em>.</b></div><div class="syntax-example-arrow" aria-hidden="true">⇄</div><div class="syntax-example-part"><span>як? у який спосіб?</span><b>Іван грає так, <em>як його навчили</em>.</b></div></div>':"";
+  const saved=app.answers[key];questionContent.innerHTML=`<article class="question-card imported-question"><div class="source-toolbar"><b>${esc(q.source)}</b><span></span></div>${q.promptHtml}${example}</article>${answerControls(q,saved)}`;
   savedMessage.classList.remove("show");
   if(q.type==="match")enforceUniqueMatch();
   if(q.type==="multi")document.querySelectorAll('input[name="multi"]').forEach(ch=>ch.addEventListener("change",()=>{const selected=[...document.querySelectorAll('input[name="multi"]:checked')];if(selected.length>3){ch.checked=false;alert("У цьому завданні можна вибрати лише три відповіді.")}}));
