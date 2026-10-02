@@ -496,8 +496,16 @@ function enforceUniqueMatch(source){
   selects.forEach(select=>[...select.options].forEach(option=>{option.disabled=Boolean(option.value&&used.has(option.value)&&select.value!==option.value)}));
 }
 const ENGLISH_READING_6_10=`<div class="shared-passage"><h3>The cheese that keeps its secret</h3><p>When the author arrived in Burträsk, a small village in northern Sweden, even the reindeer seemed difficult to catch on camera. But wildlife was not the reason for the journey. The author had come to investigate the mystery of Västerbottensost, a celebrated local cheese that cannot be successfully produced anywhere else.</p><p>Demand for the cheese is high, so the dairy once tried to increase production in the nearby city of Umeå. Although the same recipe and methods were used, the result did not have the distinctive flavour of the cheese made in Burträsk. Specialists have studied the milk, local conditions and even the microorganisms in the dairy, but the mystery remains unsolved.</p><p>According to local legend, Västerbottensost was created by accident in 1872. A dairymaid became distracted by a romantic visitor and repeatedly reheated the curds. What first appeared to be a mistake eventually produced the cheese's characteristic taste.</p><p>Today the work combines modern equipment with traditional skill. During production, experienced workers still use their hands to feel the curds and judge whether their texture is right. The finished cheese is then left to mature before it can be sold.</p><p>At the end of the visit, the author sampled the cheese in several possible combinations. Rather than choosing bread, lasagne or ice cream, the author ate it with biscuits and fruit syrup, which balanced its tangy, nutty flavour.</p></div>`;
+function applyUkrainianContentCorrections(q){
+  if(app.subject!=="ukrainian")return;
+  if(q.number===10){const option=q.options.find(item=>item.id==="Б");if(option)option.text="стріле..о, одино..о, студент..о"}
+  if(q.number===18){const option=q.options.find(item=>item.id==="В");if(option)option.text="прибув зі Львов.., основи світогляд.."}
+  if(q.number===27){q.rows[0]="Прагнучи з’ясувати причину проблеми, ви маєте говорити прямо, а не […] цієї теми, оскільки це заважає порозумінню.";q.rows[2]="Замість того щоб відверто визнати власну помилку й виправити ситуацію, керівник почав […]."}
+  if(q.number===29){const option=q.options.find(item=>item.id==="Б");if(option)option.text="За оцінками музикознавців, голос Квітки Цісик мав унікальний обертон, притаманний лише колоритному сопрано."}
+}
 function renderQuestion(){
   if(!(app.stage===1||app.stage===3))return;updateSubjects();const q=QUESTION_BANK[app.subject]?.[app.questionIndex];if(!q)return;
+  applyUkrainianContentCorrections(q);
   const key=keyFor(app.subject,app.questionIndex);app.visited[key]=true;localStorage.setItem(STORAGE.visited,JSON.stringify(app.visited));
   questionTitle.textContent=`${LABELS[app.subject]} · завдання ${q.number}`;typePill.textContent=typeName(q.type);
   questionContent.classList.toggle("ukrainian-letter-highlights",app.subject==="ukrainian"&&q.number<=2);
