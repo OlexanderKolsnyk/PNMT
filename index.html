@@ -363,7 +363,9 @@
     <h3>Перший етап завершено</h3>
     <p>Повернутися до української мови та математики вже неможливо. Друга сесія почнеться у запланований час — о 12:20. Якщо першу сесію завершено раніше, перерва автоматично буде довшою.</p>
     <div class="timer" style="display:inline-block;margin:10px 0 5px"><span id="breakTimerText">00:20:00</span></div>
-    <div class="actions"><button id="skipBreakBtn" hidden data-test-control class="btn primary">Відкрити другу сесію зараз</button></div>
+    <label class="checkline"><input id="secondStageAgree" type="checkbox"><span>Я ознайомився / ознайомилася з правилами другої сесії та готовий / готова розпочати тестування.</span></label>
+    <div id="secondStageGate" class="phase-countdown" aria-live="polite">Друга сесія відкриється о 12:20.</div>
+    <div class="actions"><button id="skipBreakBtn" class="btn primary" disabled>Почати другу сесію</button></div>
   </div>
 </div>
 
@@ -379,7 +381,7 @@
 
 <div id="warningToast" class="warning-toast" role="status" aria-live="assertive"></div>
 <script src="assets/exam-data.js?v=45"></script>
-<script src="assets/app.js?v=57"></script>
+<script src="assets/app.js?v=58"></script>
 
 </body>
 </html>

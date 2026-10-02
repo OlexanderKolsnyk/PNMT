@@ -89,7 +89,7 @@ const app={
   answerTimes:JSON.parse(localStorage.getItem(STORAGE.answerTimes)||"{}"),
   visited:JSON.parse(localStorage.getItem(STORAGE.visited)||"{}"),
   flagged:JSON.parse(localStorage.getItem(STORAGE.flagged)||"{}"),
-  stageStartedAt:persistedSession?.stageStartedAt||0,stageEndsAt:persistedSession?.stageEndsAt||0,stage2StartsAt:persistedSession?.stage2StartsAt||0,attemptStartedAt:persistedSession?.attemptStartedAt||0,warned:{},
+  stageStartedAt:persistedSession?.stageStartedAt||0,stageEndsAt:persistedSession?.stageEndsAt||0,stage2StartsAt:persistedSession?.stage2StartsAt||0,stage2RulesAccepted:persistedSession?.stage2RulesAccepted===true,attemptStartedAt:persistedSession?.attemptStartedAt||0,warned:{},
   adminToken:null
 };
 
@@ -186,7 +186,7 @@ function activeExamStage(){return app.stage===1||app.stage===2||app.stage===3}
 function syncExamMode(){document.body.classList.toggle("exam-active",activeExamStage())}
 function saveExamSession(){
   if(!app.user)return;
-  localStorage.setItem(STORAGE.session,JSON.stringify({version:39,user:app.user,stage:app.stage,subject:app.subject,questionIndex:app.questionIndex,stageStartedAt:app.stageStartedAt,stageEndsAt:app.stageEndsAt,stage2StartsAt:app.stage2StartsAt,attemptStartedAt:app.attemptStartedAt,checkpointAt:Date.now()}));
+  localStorage.setItem(STORAGE.session,JSON.stringify({version:39,user:app.user,stage:app.stage,subject:app.subject,questionIndex:app.questionIndex,stageStartedAt:app.stageStartedAt,stageEndsAt:app.stageEndsAt,stage2StartsAt:app.stage2StartsAt,stage2RulesAccepted:app.stage2RulesAccepted===true,attemptStartedAt:app.attemptStartedAt,checkpointAt:Date.now()}));
 }
 function armExamGuard(){if(activeExamStage()&&!history.state?.examGuard)history.pushState({examGuard:true},"",location.href)}
 function showView(id){
@@ -376,7 +376,7 @@ startTestBtn.addEventListener("click",()=>{
   if(!isTestUser()){
     if(siteNow()<EXAM_SCHEDULE.start){alert('Тестування почнеться 3 жовтня о 10:00 за київським часом.');return}
     if(siteNow()>=EXAM_SCHEDULE.end){alert('Тестування завершено.');return}
-    if(siteNow()>=EXAM_SCHEDULE.firstEnd){app.stage2StartsAt=EXAM_SCHEDULE.secondStart;syncExamMode();showView('exam');if(siteNow()>=EXAM_SCHEDULE.secondStart)beginStage2();else startBreak();return}
+    if(siteNow()>=EXAM_SCHEDULE.firstEnd){app.stage2StartsAt=EXAM_SCHEDULE.secondStart;syncExamMode();showView('exam');if(siteNow()>=EXAM_SCHEDULE.secondStart){app.stage2RulesAccepted=true;beginStage2()}else startBreak();return}
   }
   app.stage=1;app.subject="math";app.questionIndex=0;
   app.stageStartedAt=Date.now();
@@ -428,24 +428,28 @@ function startStageTimer(){
 }
 function startBreak(automatic=false){
   logEvent("stage_complete","exam",automatic?"stage_1_automatic":"stage_1_manual");
-  app.stage=2;clearInterval(app.timerId);syncExamMode();saveExamSession();breakModal.classList.add("show");
+  app.stage=2;app.stage2RulesAccepted=false;secondStageAgree.checked=false;clearInterval(app.timerId);syncExamMode();saveExamSession();breakModal.classList.add("show");
   app.stage2StartsAt=Math.max(app.stage2StartsAt||0,Date.now()+1000);
-  const update=()=>{app.breakSeconds=Math.max(0,Math.ceil((app.stage2StartsAt-Date.now())/1000));breakTimerText.textContent=fmtTime(app.breakSeconds);if(app.breakSeconds<=0){clearInterval(app.breakId);beginStage2()}};
+  const update=()=>{app.breakSeconds=Math.max(0,Math.ceil((app.stage2StartsAt-siteNow())/1000));breakTimerText.textContent=fmtTime(app.breakSeconds);const timeOpen=isTestUser()||siteNow()>=EXAM_SCHEDULE.secondStart;secondStageAgree.disabled=!timeOpen;skipBreakBtn.disabled=!timeOpen||!secondStageAgree.checked;secondStageGate.textContent=timeOpen?"Поставте галочку, щоб відкрити другу сесію.":`Друга сесія відкриється о 12:20 — через ${fmtTime(app.breakSeconds)}.`};
   clearInterval(app.breakId);update();app.breakId=setInterval(update,1000);
 }
 function beginStage2(){
-  if(!app.user||(!isTestUser()&&Date.now()<EXAM_SCHEDULE.secondStart))return;
+  if(!app.user)return;
+  if(!isTestUser()&&siteNow()<EXAM_SCHEDULE.secondStart){alert("Друга сесія відкриється о 12:20 за київським часом.");return}
+  if(!app.stage2RulesAccepted&&!secondStageAgree.checked){alert("Спочатку підтвердьте, що ознайомилися з правилами другої сесії.");return}
+  app.stage2RulesAccepted=true;
   clearInterval(app.breakId);breakModal.classList.remove("show");app.stage=3;app.subject="history";app.questionIndex=0;
   app.stageStartedAt=Date.now();if(!app.attemptStartedAt)app.attemptStartedAt=app.stageStartedAt;app.stageEndsAt=isTestUser()?app.stageStartedAt+7200*1000:EXAM_SCHEDULE.end;app.warned={};
   logEvent("test_start","exam","stage_2");syncExamMode();saveExamSession();armExamGuard();updateSubjects();startStageTimer();renderQuestion();showView("exam");
 }
-skipBreakBtn.addEventListener("click",()=>{if(isTestUser())beginStage2()});
-startStage2TestBtn.addEventListener("click",()=>{if(!isTestUser())return;if(!rulesAgree.checked){alert("Спочатку підтвердьте, що ознайомилися з правилами.");return}beginStage2()});
+secondStageAgree.addEventListener("change",()=>{const timeOpen=isTestUser()||siteNow()>=EXAM_SCHEDULE.secondStart;skipBreakBtn.disabled=!timeOpen||!secondStageAgree.checked});
+skipBreakBtn.addEventListener("click",beginStage2);
+startStage2TestBtn.addEventListener("click",()=>{if(!isTestUser())return;if(!rulesAgree.checked){alert("Спочатку підтвердьте, що ознайомилися з правилами.");return}app.stage2RulesAccepted=true;beginStage2()});
 function resetParticipantProgress(){
   if(!isTestUser())return;
   if(pendingResults().length){alert("Дочекайтеся збереження попереднього результату.");return}
   clearInterval(app.timerId);clearInterval(app.breakId);
-  app.stage=0;app.subject="ukrainian";app.questionIndex=0;app.secondsLeft=7200;app.breakSeconds=1200;app.answers={};app.answerTimes={};app.visited={};app.flagged={};app.attemptStartedAt=0;app.warned={};localStorage.removeItem(STORAGE.submissionId);
+  app.stage=0;app.subject="ukrainian";app.questionIndex=0;app.secondsLeft=7200;app.breakSeconds=1200;app.stage2RulesAccepted=false;app.answers={};app.answerTimes={};app.visited={};app.flagged={};app.attemptStartedAt=0;app.warned={};localStorage.removeItem(STORAGE.submissionId);
   localStorage.removeItem(STORAGE.answers);localStorage.removeItem(STORAGE.answerTimes);localStorage.removeItem(STORAGE.session);localStorage.removeItem(STORAGE.visited);localStorage.removeItem(STORAGE.flagged);syncExamMode();
   breakModal.classList.remove("show");resultModal.classList.remove("show");rulesAgree.checked=false;lobbyName.textContent=app.user?.name||app.user?.login||"Учасник";showView("lobby");
 }
@@ -710,6 +714,7 @@ window.addEventListener("beforeunload",e=>{if(activeExamStage()){e.preventDefaul
 window.addEventListener("popstate",()=>{if(activeExamStage()){history.pushState({examGuard:true},"",location.href);alert("Під час активного тестування вихід заблоковано. Спочатку завершіть етап.")}});
 function restorePersistedSession(){
   if(!persistedSession?.user||![1,2,3].includes(app.stage))return;
+  if(app.stage===3&&!app.stage2RulesAccepted){app.stage=2;app.stage2StartsAt=EXAM_SCHEDULE.secondStart}
   lobbyName.textContent=app.user.name||app.user.login||"Учасник";
   syncExamMode();armExamGuard();showView("exam");updateSubjects();
   if(app.stage===2){startBreak()}else{renderQuestion();startStageTimer()}
