@@ -285,6 +285,30 @@ th{background:#f7f8fb;color:#5e687a}
 .result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:18px 0}
 .result{padding:16px;border:1px solid var(--line);border-radius:14px;background:#fafbfe}
 .result strong{font-size:22px}
+.result-modal-card{width:min(850px,100%);padding:36px 38px;border-radius:24px;background:#fff}
+.result-modal-card h3{font-size:34px;line-height:1.12;margin-bottom:8px}
+.result-lead{font-size:17px;margin:0 0 22px}
+.result-loading{display:flex;min-height:150px;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center;color:var(--muted)}
+.result-loading strong{font-size:18px;color:var(--dark)}
+.result-spinner{width:34px;height:34px;border:4px solid #ffe0d8;border-top-color:#ff7567;border-radius:50%;animation:result-spin .8s linear infinite}
+.telegram-result-info{display:grid;grid-template-columns:102px 1fr;gap:26px;padding:22px 26px;border:1px solid #ffd2c7;border-radius:16px;background:#fff8f5}
+.telegram-result-info h4{margin:0 0 6px;font-size:19px;line-height:1.3}
+.telegram-result-info p{margin:0 0 14px;font-size:15px;line-height:1.45}
+.telegram-result-info p:last-child{margin-bottom:0}
+.telegram-result-icon{align-self:start;display:grid;place-items:center;width:66px;height:66px;margin:10px auto 0;border-radius:50%;background:#f1f9ff;box-shadow:0 0 0 1px #e3eef5}
+.telegram-result-icon svg{width:40px;height:40px;fill:#20a7df;transform:translate(-1px,1px)}
+.telegram-result-cta{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:56px;margin-top:16px;padding:14px 20px;border:0;border-radius:12px;background:linear-gradient(135deg,#ff6f61,#ff806e);box-shadow:0 10px 24px rgba(237,91,76,.2);color:#fff;font-size:17px;font-weight:900;text-decoration:none;transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}
+.telegram-result-cta svg{width:27px;height:27px;fill:currentColor}
+.telegram-result-cta:hover{filter:brightness(1.03);transform:translateY(-1px);box-shadow:0 13px 28px rgba(237,91,76,.27)}
+.telegram-result-cta:active{transform:translateY(1px);box-shadow:0 6px 14px rgba(237,91,76,.2)}
+.telegram-result-cta:focus-visible{outline:3px solid rgba(255,111,97,.35);outline-offset:3px}
+.result-secondary-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.result-secondary-actions .btn{width:100%;justify-content:center}
+.result-repeat{width:100%;margin-top:12px}
+.result-retry{width:100%;margin-top:16px}
+.delivery-state.err{background:#fff1f0;border-color:#ffb6ae;color:#9d3028}
+.tester-result-grid{margin:16px 0}
+@keyframes result-spin{to{transform:rotate(360deg)}}
 .hide{display:none!important}
 @media(max-width:1080px){
   .hero,.grid2,.lobby-grid{grid-template-columns:1fr}
@@ -306,6 +330,14 @@ th{background:#f7f8fb;color:#5e687a}
   .match-row .arrow{display:none}
   .option-bank,.order-list{grid-template-columns:1fr}
   .brand-copy small{display:none}
+  .modal{padding:10px;align-items:flex-start;overflow:auto}
+  .result-modal-card{padding:24px 18px;margin:auto;border-radius:20px}
+  .result-modal-card h3{font-size:28px}
+  .telegram-result-info{grid-template-columns:1fr;padding:20px 18px;gap:10px}
+  .telegram-result-icon{margin:0 auto}
+  .telegram-result-info h4{text-align:center}
+  .telegram-result-cta{font-size:16px;padding:14px 12px}
+  .result-secondary-actions{grid-template-columns:1fr}
 }
 
 /* v3: coded PDF sources, question statuses and session warnings */

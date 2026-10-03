@@ -3,6 +3,7 @@ const CONFIG={
   DEFAULT_DEADLINE:"2026-10-02T23:59",
   DEFAULT_TEST_START:"2026-10-03T10:00",
   DEFAULT_TEST_END:"2026-10-03T14:20",
+  TELEGRAM_BOT_USERNAME:"Kolisnyk_academy_bot",
   DEMO_LOGIN:"",
   DEMO_PASSWORD:"",
   LOCAL_DEMO:false
@@ -162,11 +163,23 @@ function buildResultPayload(){return {action:"saveResult",client_submission_id:c
 function queueResult(payload){const items=pendingResults().filter(item=>item.client_submission_id!==payload.client_submission_id);items.push(payload);savePendingResults(items)}
 function renderResultResponse(response){
   const results=response?.results||{};
-  resultGrid.innerHTML=Object.entries(results).map(([s,r])=>{const answered=Number.isFinite(r.answered)?'<div style="font-size:12px;color:var(--muted);margin-top:5px">Надано відповідей: '+r.answered+'/'+r.total+'</div>':"";return '<div class="result"><span>'+LABELS[s]+'</span><br><strong>'+r.points+'/'+r.max+'</strong>'+answered+'</div>'}).join("");
-  deliveryState.className="delivery-state ok";deliveryState.textContent=response?.duplicate?"Результат уже був успішно збережений раніше.":"Дані збережено.";
+  resultLoading.classList.add("hide");resultLead.classList.remove("hide");resultErrorState.classList.add("hide");resultSuccessContent.classList.remove("hide");retryResultBtn.classList.add("hide");
+  if(isTestUser()){
+    resultGrid.classList.remove("hide");
+    resultGrid.innerHTML=Object.entries(results).map(([s,r])=>{const answered=Number.isFinite(r.answered)?'<div style="font-size:12px;color:var(--muted);margin-top:5px">Надано відповідей: '+r.answered+'/'+r.total+'</div>':"";return '<div class="result"><span>'+LABELS[s]+'</span><br><strong>'+r.points+'/'+r.max+'</strong>'+answered+'</div>'}).join("");
+  }else{resultGrid.classList.add("hide");resultGrid.innerHTML=""}
+  deliveryState.className="delivery-state ok";deliveryState.textContent=response?.duplicate?"✓ Дані вже були успішно збережені.":"✓ Дані збережено.";
+}
+function showResultLoading(){
+  resultLoading.classList.remove("hide");resultLead.classList.add("hide");resultErrorState.classList.add("hide");resultSuccessContent.classList.add("hide");retryResultBtn.classList.add("hide");
+  deliveryState.className="delivery-state hide";deliveryState.textContent="";
+}
+function showResultSaveError(message){
+  resultLoading.classList.add("hide");resultLead.classList.add("hide");resultSuccessContent.classList.add("hide");retryResultBtn.classList.remove("hide");
+  resultErrorState.textContent="Не вдалося підтвердити збереження. Перевірте інтернет і повторіть спробу. "+(message||"");resultErrorState.classList.remove("hide");
 }
 async function flushPendingResults(showResult=false){
-  if(!navigator.onLine||!CONFIG.SHEETS_ENDPOINT)return false;
+  if(!navigator.onLine||!CONFIG.SHEETS_ENDPOINT){if(showResult)showResultSaveError("Сервер недоступний.");return false}
   const items=pendingResults();if(!items.length)return true;
   for(const item of [...items]){
     try{
@@ -174,7 +187,7 @@ async function flushPendingResults(showResult=false){
       savePendingResults(pendingResults().filter(x=>x.client_submission_id!==item.client_submission_id));
       if(showResult)renderResultResponse(response);
     }catch(error){
-      if(showResult){deliveryState.className="delivery-state";deliveryState.textContent="Результат збережено в черзі цього браузера. Надсилання повториться автоматично після відновлення інтернету. "+error.message}
+      if(showResult)showResultSaveError(error.message);
       return false;
     }
   }
@@ -592,15 +605,16 @@ function scoreQuestion(q,answer){
 function maxQuestion(q){if(q.type==="number")return 2;if(q.type==="match")return q.rows.length;if(q.type==="sequence"||q.type==="multi")return 3;return 1}
 async function finishWholeTest(automatic=false){
   clearInterval(app.timerId);app.stage=4;saveExamSession();syncExamMode();
-  resultGrid.innerHTML='<div class="result"><span>Результат</span><br><strong>Надсилаємо…</strong></div>';
-  deliveryState.className="delivery-state";deliveryState.textContent="Не закривайте сторінку до підтвердження збереження. Якщо інтернет зникне, результат залишиться в локальній черзі.";
+  showResultLoading();
   resultModal.classList.add("show");
   const payload=buildResultPayload();queueResult(payload);logEvent("test_complete","exam",automatic?"automatic":"manual");
   const sent=await flushPendingResults(true);
   if(sent){localStorage.removeItem(STORAGE.session)}
-  else{deliveryState.className="delivery-state";deliveryState.textContent="Результат надійно збережено в черзі цього браузера. Надсилання повториться автоматично після відновлення інтернету."}
+  else{showResultSaveError("Відповіді залишилися в локальній черзі та не втрачені.")}
 }
 repeatTestBtn.addEventListener("click",resetParticipantProgress);resultHome.addEventListener("click",()=>{resultModal.classList.remove("show");showView(publicEndReached()?"ended":"home")});
+retryResultBtn.addEventListener("click",async()=>{showResultLoading();const sent=await flushPendingResults(true);if(sent)localStorage.removeItem(STORAGE.session)});
+telegramResultBtn.href=`https://t.me/${CONFIG.TELEGRAM_BOT_USERNAME}`;
 
 /* Соцмережі */
 function socialIcon(name){
@@ -620,7 +634,8 @@ document.addEventListener("click",event=>{
   const control=event.target.closest("button,a");if(!control||!eventRegistrationId())return;
   const href=control.getAttribute("href")||"",nav=control.dataset.nav||"",target=control.id||nav||href||control.textContent.trim().slice(0,80);
   let eventName="ui_click",category="navigation";
-  if(control.id==="mobileSupport"){eventName="support_click";category="support"}
+  if(control.id==="telegramResultBtn"){eventName="result_telegram_click";category="result"}
+  else if(control.id==="mobileSupport"){eventName="support_click";category="support"}
   else if(nav==="tutors"){eventName="preparation_open";category="preparation"}
   else if(/t\.me\/kolisnyk_academy/.test(href)){eventName="kolisnyk_telegram_click";category="social"}
   else if(/instagram\.com\/kolisnyk_academy/.test(href)){eventName="kolisnyk_instagram_click";category="social"}
@@ -726,7 +741,7 @@ window.addEventListener("online",()=>{warningToast.textContent="Інтернет
 window.addEventListener("offline",()=>{warningToast.textContent="Немає інтернету. Збережені відповіді залишаються на цьому пристрої.";warningToast.classList.add("show")});
 window.addEventListener("pagehide",()=>{if(activeExamStage())saveExamSession()});document.addEventListener("visibilitychange",()=>{if(document.hidden&&activeExamStage())saveExamSession();if(!document.hidden)applyPublicPhase()});
 window.addEventListener('focus',()=>applyPublicPhase());
-if(pendingResults().length&&!publicEndReached()){app.stage=4;syncExamMode();resultGrid.innerHTML='<div class="result"><span>Результат</span><br><strong>Очікує надсилання</strong></div>';deliveryState.className="delivery-state";deliveryState.textContent="Знайдено ненадісланий результат. Повторюємо надсилання автоматично.";resultModal.classList.add("show");flushPendingResults(true)}
+if(pendingResults().length&&!publicEndReached()){app.stage=4;syncExamMode();showResultLoading();resultModal.classList.add("show");flushPendingResults(true)}
 else if(pendingResults().length){flushPendingResults(false)}
 
 /* Публічні налаштування із Google Sheets */

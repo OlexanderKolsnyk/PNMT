@@ -370,18 +370,47 @@
 </div>
 
 <div id="resultModal" class="modal">
-  <div class="modal-card">
+  <div class="modal-card result-modal-card">
     <div class="eyebrow">Результат</div>
-    <h3>Пробний НМТ завершений</h3>
-    <p>Результат обчислено лише за відповідями, які були підтверджені кнопкою «Зберегти відповідь».</p>
-    <div id="resultGrid" class="result-grid"></div><div id="deliveryState" class="delivery-state hide" role="status" aria-live="polite"></div>
-    <div class="actions"><button id="repeatTestBtn" hidden data-test-control class="btn primary">Скинути й пройти ще раз</button><button id="resultHome" class="btn ghost">На головну</button><button class="btn btn-ghost" data-nav="tutors">Підготовка з викладачем</button></div>
+    <h3>Пробний НМТ завершено</h3>
+    <p id="resultLead" class="result-lead hide">Ваші відповіді успішно збережено.</p>
+    <div id="resultLoading" class="result-loading" role="status" aria-live="polite">
+      <span class="result-spinner" aria-hidden="true"></span>
+      <strong>Зачекайте, будь ласка…</strong>
+      <span>Зберігаємо відповіді та підтверджуємо спробу.</span>
+    </div>
+    <div id="resultErrorState" class="delivery-state err hide" role="alert"></div>
+    <div id="resultSuccessContent" class="hide">
+      <div class="telegram-result-info">
+        <div class="telegram-result-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M21 3 3.8 9.6c-1.2.5-1.2 1.2-.2 1.5l4.4 1.4 1.7 5.2c.2.7.1 1 .8 1 .5 0 .8-.2 1-.5l2.5-2.4 5 3.7c.9.5 1.6.2 1.8-.9L23 4.5C23.3 3.2 22.5 2.6 21 3Z"/></svg>
+        </div>
+        <div>
+          <h4>Результат можна отримати в Telegram</h4>
+          <p>На пробне НМТ зареєструвалося значно більше учасників, ніж ми очікували 💛<br>Щоб сайт працював стабільно для всіх, результати та аналіз тесту ми видаємо через наш Telegram-бот.</p>
+          <p>Перейдіть у бот, натисніть «Start / Розпочати» — і одразу отримаєте свій результат.</p>
+          <p>Там також можна замовити детальний аналіз тесту: правильні й неправильні відповіді, теми, які варто повторити, та рекомендації щодо підготовки.</p>
+        </div>
+      </div>
+      <div id="resultGrid" class="result-grid tester-result-grid hide"></div>
+      <div id="deliveryState" class="delivery-state hide" role="status" aria-live="polite"></div>
+      <a id="telegramResultBtn" class="telegram-result-cta" href="https://t.me/Kolisnyk_academy_bot" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 3.8 9.6c-1.2.5-1.2 1.2-.2 1.5l4.4 1.4 1.7 5.2c.2.7.1 1 .8 1 .5 0 .8-.2 1-.5l2.5-2.4 5 3.7c.9.5 1.6.2 1.8-.9L23 4.5C23.3 3.2 22.5 2.6 21 3Z"/></svg>
+        <span>Отримати результат у Telegram</span>
+      </a>
+      <div class="result-secondary-actions">
+        <button id="resultHome" class="btn ghost">На головну</button>
+        <button class="btn btn-ghost" data-nav="tutors">Підготовка з викладачем</button>
+      </div>
+      <button id="repeatTestBtn" hidden data-test-control class="btn primary result-repeat">Скинути й пройти ще раз</button>
+    </div>
+    <button id="retryResultBtn" class="btn primary result-retry hide" type="button">Повторити збереження</button>
   </div>
 </div>
 
 <div id="warningToast" class="warning-toast" role="status" aria-live="assertive"></div>
 <script src="assets/exam-data.js?v=45"></script>
-<script src="assets/app.js?v=58"></script>
+<script src="assets/app.js?v=59"></script>
 
 </body>
 </html>
