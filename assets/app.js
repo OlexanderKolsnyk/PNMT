@@ -100,6 +100,13 @@ const REGISTRATION_DEADLINE=Date.parse('2026-10-02T23:59:00+03:00');
 const EXAM_DAY_START=Date.parse('2026-10-03T00:00:00+03:00');
 const PUBLIC_END_SCREEN_AT=Date.parse('2026-10-03T14:20:30+03:00');
 function isTestUser(){return app.user?.testAccess===true}
+const EMERGENCY_STAGE1_REOPEN_LOGINS=new Set(["pnmt-bef41caf78"]);
+function reopenEmergencyStage1IfNeeded(){
+  const hasUkrainianAnswer=Object.entries(app.answers).some(([key,value])=>key.startsWith("ukrainian:")&&hasSaved(value));
+  if(app.stage!==2||!EMERGENCY_STAGE1_REOPEN_LOGINS.has(app.user?.login)||hasUkrainianAnswer||siteNow()>=EXAM_SCHEDULE.firstEnd)return false;
+  app.stage=1;app.subject="ukrainian";app.questionIndex=0;app.stageEndsAt=EXAM_SCHEDULE.firstEnd;app.stage2StartsAt=EXAM_SCHEDULE.secondStart;app.stage2RulesAccepted=false;app.warned={};
+  saveExamSession();logEvent("stage_reopened","exam","stage_1_ukrainian_emergency");return true;
+}
 function updateTestControls(){document.querySelectorAll('[data-test-control]').forEach(button=>{button.hidden=!isTestUser()})}
 
 function getLocalSettings(){
@@ -729,6 +736,7 @@ window.addEventListener("beforeunload",e=>{if(activeExamStage()){e.preventDefaul
 window.addEventListener("popstate",()=>{if(activeExamStage()){history.pushState({examGuard:true},"",location.href);alert("Під час активного тестування вихід заблоковано. Спочатку завершіть етап.")}});
 function restorePersistedSession(){
   if(!persistedSession?.user||![1,2,3].includes(app.stage))return;
+  reopenEmergencyStage1IfNeeded();
   if(app.stage===3&&!app.stage2RulesAccepted){app.stage=2;app.stage2StartsAt=EXAM_SCHEDULE.secondStart}
   lobbyName.textContent=app.user.name||app.user.login||"Учасник";
   syncExamMode();armExamGuard();showView("exam");updateSubjects();
