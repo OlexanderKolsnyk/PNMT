@@ -14,8 +14,8 @@ const EVENT_HEADERS = [
 const SETTINGS_HEADERS = ["Key","Value"];
 const DEFAULT_SETTINGS = {
   RegistrationOpen:"true",
-  RegistrationDeadline:"2026-10-02T23:59:00+03:00",
-  ExamDate:"2026-10-03",
+  RegistrationDeadline:"2026-10-30T23:59:00+02:00",
+  ExamDate:"2026-10-31",
   ExamStart:"10:00",
   ExamEnd:"14:20",
   SupportTelegram:"",
