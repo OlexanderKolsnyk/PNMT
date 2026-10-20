@@ -116,10 +116,7 @@ function getLocalSettings(){
     testStart:CONFIG.DEFAULT_TEST_START,
     testEnd:CONFIG.DEFAULT_TEST_END,
     registrationOpen:true,
-    socials:x.socials||{
-      math:{telegram:"",instagram:"",tiktok:""},
-      other:{telegram:"",instagram:"",tiktok:""}
-    }
+    socials:x.socials||{math:{telegram:"",instagram:"",tiktok:""}}
   };
 }
 function saveLocalSettings(s){localStorage.setItem(STORAGE.settings,JSON.stringify(s))}
@@ -630,10 +627,9 @@ function socialIcon(name){
 }
 function socialButton(name,label,url){return url?'<a class="social" target="_blank" rel="noopener" href="'+esc(url)+'" aria-label="'+esc(label)+'" title="'+esc(label)+'">'+socialIcon(name)+'</a>':''}
 function renderSocials(settings=getLocalSettings()){
-  const defaults={math:{telegram:"https://t.me/kolisnyk_academy",tiktok:"https://www.tiktok.com/@kolisnyk_academy",site:"https://olexanderkolsnyk.github.io/Kolisnyk-Academy/",viber:"https://r.mssg.me/m/697bfcc0610fc48495b6ee1d",instagram:"https://www.instagram.com/kolisnyk_academy",youtube:"https://www.youtube.com/@kolisnyk_academy"},other:{telegram:"https://t.me/lessons4you",tiktok:"https://www.tiktok.com/@lessons.4.you?is_from_webapp=1&sender_device=pc",site:"https://www.lessons4you.party",instagram:"https://www.instagram.com/lessons.4.you?stkn=eWkzbnVybnd5M3U0"}};
-  const s=settings.socials||{},merge=(base,values)=>({...base,...Object.fromEntries(Object.entries(values||{}).filter(([,value])=>value))}),m=merge(defaults.math,s.math),o=merge(defaults.other,s.other);
+  const defaults={math:{telegram:"https://t.me/kolisnyk_academy",tiktok:"https://www.tiktok.com/@kolisnyk_academy",site:"https://olexanderkolsnyk.github.io/Kolisnyk-Academy/",viber:"https://r.mssg.me/m/697bfcc0610fc48495b6ee1d",instagram:"https://www.instagram.com/kolisnyk_academy",youtube:"https://www.youtube.com/@kolisnyk_academy"}};
+  const s=settings.socials||{},merge=(base,values)=>({...base,...Object.fromEntries(Object.entries(values||{}).filter(([,value])=>value))}),m=merge(defaults.math,s.math);
   mathSocials.innerHTML=socialButton("telegram","Telegram Kolisnyk Academy",m.telegram)+socialButton("tiktok","TikTok Kolisnyk Academy",m.tiktok)+socialButton("site","Сайт Kolisnyk Academy",m.site)+socialButton("viber","Viber Kolisnyk Academy",m.viber)+socialButton("instagram","Instagram Kolisnyk Academy",m.instagram)+socialButton("youtube","YouTube Kolisnyk Academy",m.youtube);
-  otherSocials.innerHTML=socialButton("telegram","Telegram Lessons for You",o.telegram)+socialButton("tiktok","TikTok Lessons for You",o.tiktok)+socialButton("site","Сайт Lessons for You",o.site)+socialButton("instagram","Instagram Lessons for You",o.instagram);
 }
 renderSocials();
 
@@ -647,9 +643,6 @@ document.addEventListener("click",event=>{
   else if(/t\.me\/kolisnyk_academy/.test(href)){eventName="kolisnyk_telegram_click";category="social"}
   else if(/instagram\.com\/kolisnyk_academy/.test(href)){eventName="kolisnyk_instagram_click";category="social"}
   else if(/tiktok\.com\/@kolisnyk_academy/.test(href)){eventName="kolisnyk_tiktok_click";category="social"}
-  else if(/t\.me\/lessons4you/.test(href)){eventName="lessons4you_telegram_click";category="social"}
-  else if(/instagram\.com\/lessons\.4\.you/.test(href)){eventName="lessons4you_instagram_click";category="social"}
-  else if(/tiktok\.com\/@lessons\.4\.you/.test(href)){eventName="lessons4you_tiktok_click";category="social"}
   logEvent(eventName,category,target);
 });
 rulesAgree.addEventListener("change",()=>updateLobbyAvailability());
@@ -688,13 +681,10 @@ async function loadAdmin(){
   adminDeadline.value=(s.deadline||CONFIG.DEFAULT_DEADLINE).slice(0,16);
   adminTestStart.value=(s.testStart||CONFIG.DEFAULT_TEST_START).slice(0,16);
   adminRegOpen.value=s.registrationOpen===false?"no":"yes";
-  const social=s.socials||{math:{},other:{}};
+  const social=s.socials||{math:{}};
   mathTelegram.value=social.math?.telegram||"";
   mathInstagram.value=social.math?.instagram||"";
   mathTiktok.value=social.math?.tiktok||"";
-  otherTelegram.value=social.other?.telegram||"";
-  otherInstagram.value=social.other?.instagram||"";
-  otherTiktok.value=social.other?.tiktok||"";
   participantsBody.innerHTML=(res.participants||[]).map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p.name)}</td><td>${esc(p.phone)}</td><td>${esc(p.telegram)}</td><td>${esc(p.email)}</td><td>${esc(p.grade)}</td><td>${esc(p.city)}</td><td>${esc(p.login)}</td><td><span class="tag">${esc(p.status)}</span></td></tr>`).join("")||`<tr><td colspan="9" style="text-align:center;padding:26px;color:var(--muted)">Немає учасників</td></tr>`;
   renderSocials(s)
 }
@@ -712,10 +702,7 @@ saveAdminSettings.addEventListener("click",async()=>{
       deadline:adminDeadline.value,
       testStart:adminTestStart.value,
       registrationOpen:adminRegOpen.value==="yes",
-      socials:{
-        math:{telegram:mathTelegram.value.trim(),instagram:mathInstagram.value.trim(),tiktok:mathTiktok.value.trim()},
-        other:{telegram:otherTelegram.value.trim(),instagram:otherInstagram.value.trim(),tiktok:otherTiktok.value.trim()}
-      }
+      socials:{math:{telegram:mathTelegram.value.trim(),instagram:mathInstagram.value.trim(),tiktok:mathTiktok.value.trim()}}
     };
     await api({action:"adminSaveSettings",token:app.adminToken,settings});
     alert("Збережено.");await loadAdmin()

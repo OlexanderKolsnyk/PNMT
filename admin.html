@@ -34,7 +34,7 @@
 
 <section id="adminApp" class="app hidden">
   <header class="top">
-    <div class="topBrand"><span class="logo">PM</span><span><b>PM Admin</b><small>Kolisnyk Academy × Lessons for You</small></span></div>
+    <div class="topBrand"><span class="logo">PM</span><span><b>PM Admin</b><small>Kolisnyk Academy</small></span></div>
     <div class="topActions"><a class="btn ghost" href="index.html">На сайт</a><button id="logoutBtn" class="btn danger">Вийти</button></div>
   </header>
   <div class="layout">
@@ -56,7 +56,6 @@
           <input id="regSearch" type="search" placeholder="Пошук за ім’ям, телефоном, Telegram, email або ID">
           <select id="regStatus"><option value="">Усі статуси</option></select>
           <select id="regSource"><option value="">Усі джерела</option><option>TikTok</option><option>Instagram</option><option>Telegram</option><option>YouTube</option><option>Direct / Other</option></select>
-          <select id="regTeam"><option value="">Усі напрями</option><option value="kolisnyk">Kolisnyk Academy</option><option value="lessons4you">Lessons for You</option><option value="other">Other</option></select>
           <select id="regSort"><option value="newest">Спочатку нові</option><option value="oldest">Спочатку старі</option></select>
         </div>
         <div id="registrationsContent" class="loading">Відкрийте вкладку для завантаження.</div>
@@ -91,13 +90,12 @@
 const ENDPOINT="https://script.google.com/macros/s/AKfycbw0Lj8RtqIamar2h9yXeazFTadYvfIfsTqUpcKcPK1mEi8cV-XqfP97SzwzVKRu-IeN/exec";
 const TOKEN_KEY="pnmt_admin_token";
 const STATUSES=["Нова реєстрація","Підтверджено","Допущено","Відмовлено","Дубль","Проблема з контактом"];
-const SETTING_KEYS=["RegistrationOpen","RegistrationDeadline","ExamDate","ExamStart","ExamEnd","SupportTelegram","KolisnykTelegram","KolisnykInstagram","KolisnykTikTok","KolisnykSite","KolisnykViber","KolisnykYouTube","Lessons4YouTelegram","Lessons4YouInstagram","Lessons4YouTikTok","Lessons4YouYouTube","Lessons4YouSite"];
+const SETTING_KEYS=["RegistrationOpen","RegistrationDeadline","ExamDate","ExamStart","ExamEnd","SupportTelegram","KolisnykTelegram","KolisnykInstagram","KolisnykTikTok","KolisnykSite","KolisnykViber","KolisnykYouTube"];
 const state={token:sessionStorage.getItem(TOKEN_KEY)||"",registrations:[],events:[],loaded:{dashboard:false,registrations:false,events:false,settings:false},participantId:""};
 
 function esc(value){return String(value==null?"":value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
 function displayDate(value){if(!value)return "";const d=new Date(value);return Number.isNaN(d.getTime())?String(value):d.toLocaleString("uk-UA")}
 function sourceBucket(row){const s=String(row.LastUTMSource||row.FirstUTMSource||"").toLowerCase();if(s.includes("tiktok"))return"TikTok";if(s.includes("instagram"))return"Instagram";if(s.includes("telegram")||s.includes("t.me"))return"Telegram";if(s.includes("youtube"))return"YouTube";return"Direct / Other"}
-function teamBucket(row){const s=[row.FirstUTMSource,row.FirstUTMCampaign,row.FirstUTMContent,row.LastUTMSource,row.LastUTMCampaign,row.LastUTMContent,row.InitialReferrer].join(" ").toLowerCase();if(s.includes("kolisnyk"))return"kolisnyk";if(s.includes("lessons4you")||s.includes("lessons.4.you"))return"lessons4you";return"other"}
 function token(){return sessionStorage.getItem(TOKEN_KEY)||""}
 
 async function api(action,data={},requiresAuth=true){
@@ -160,8 +158,7 @@ async function loadDashboard(){
     box.innerHTML='<div class="cards">'+
       metric("Усього реєстрацій",m.total)+metric("Нові сьогодні",m.today)+
       metric("Підтверджені",m.confirmed)+metric("Непідтверджені",m.unconfirmed)+
-      '</div><div class="split"><div class="panel"><h2>Джерела</h2>'+bars(data.sources)+'</div>'+
-      '<div class="panel"><h2>Напрями</h2>'+bars(data.referrals)+'</div></div>'+
+      '</div><div class="panel"><h2>Джерела</h2>'+bars(data.sources)+'</div>'+
       '<div class="panel"><h2>Важливі Events</h2>'+bars(data.events)+'</div>';
   }catch(error){box.className="message error";box.textContent=error.message}
 }
@@ -176,16 +173,15 @@ async function loadRegistrations(){
     renderRegistrations();
   }catch(error){box.className="message error";box.textContent=error.message}
 }
-["regSearch","regStatus","regSource","regTeam","regSort"].forEach(id=>document.getElementById(id).addEventListener("input",renderRegistrations));
+["regSearch","regStatus","regSource","regSort"].forEach(id=>document.getElementById(id).addEventListener("input",renderRegistrations));
 function filteredRegistrations(){
   const q=document.getElementById("regSearch").value.trim().toLowerCase();
   const status=document.getElementById("regStatus").value;
   const source=document.getElementById("regSource").value;
-  const team=document.getElementById("regTeam").value;
   const sort=document.getElementById("regSort").value;
   return state.registrations.filter(row=>{
     const hay=[row.RegistrationID,row.Name,row.Phone,row.Telegram,row.Email,row.City].join(" ").toLowerCase();
-    return(!q||hay.includes(q))&&(!status||row.Status===status)&&(!source||sourceBucket(row)===source)&&(!team||teamBucket(row)===team);
+    return(!q||hay.includes(q))&&(!status||row.Status===status)&&(!source||sourceBucket(row)===source);
   }).sort((a,b)=>(new Date(a.Timestamp)-new Date(b.Timestamp))*(sort==="newest"?-1:1));
 }
 function renderRegistrations(){

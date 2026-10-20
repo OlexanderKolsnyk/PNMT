@@ -24,12 +24,7 @@ const DEFAULT_SETTINGS = {
   KolisnykTikTok:"",
   KolisnykSite:"",
   KolisnykViber:"",
-  KolisnykYouTube:"",
-  Lessons4YouTelegram:"",
-  Lessons4YouInstagram:"",
-  Lessons4YouTikTok:"",
-  Lessons4YouYouTube:"",
-  Lessons4YouSite:""
+  KolisnykYouTube:""
 };
 
 const PUBLIC_SETTING_KEYS = Object.keys(DEFAULT_SETTINGS);
@@ -38,8 +33,7 @@ const ALLOWED_STATUSES = [
 ];
 const ALLOWED_EVENTS = new Set([
   "registration_success","preparation_open","support_click",
-  "kolisnyk_telegram_click","kolisnyk_instagram_click","kolisnyk_tiktok_click",
-  "lessons4you_telegram_click","lessons4you_instagram_click","lessons4you_tiktok_click"
+  "kolisnyk_telegram_click","kolisnyk_instagram_click","kolisnyk_tiktok_click"
 ]);
 const ADMIN_SESSION_SECONDS = 1800;
 const ADMIN_ACTIONS = new Set([
@@ -211,7 +205,6 @@ function adminDashboard_() {
   const events = readObjects_(ensureSheet_(spreadsheet,"Events",EVENT_HEADERS));
   const today = Utilities.formatDate(new Date(),Session.getScriptTimeZone(),"yyyy-MM-dd");
   const sources = {TikTok:0,Instagram:0,Telegram:0,YouTube:0,"Direct / Other":0};
-  const referrals = {Kolisnyk:0,"Lessons for You":0,Other:0};
 
   registrations.forEach(function(row) {
     const source = String(row.LastUTMSource || row.FirstUTMSource || "").toLowerCase();
@@ -221,13 +214,6 @@ function adminDashboard_() {
     else if (source.indexOf("youtube") >= 0) sources.YouTube++;
     else sources["Direct / Other"]++;
 
-    const referral = [
-      row.FirstUTMSource,row.FirstUTMCampaign,row.FirstUTMContent,
-      row.LastUTMSource,row.LastUTMCampaign,row.LastUTMContent,row.InitialReferrer
-    ].join(" ").toLowerCase();
-    if (referral.indexOf("kolisnyk") >= 0) referrals.Kolisnyk++;
-    else if (referral.indexOf("lessons4you") >= 0 || referral.indexOf("lessons.4.you") >= 0) referrals["Lessons for You"]++;
-    else referrals.Other++;
   });
 
   const eventCounts = {};
@@ -244,7 +230,6 @@ function adminDashboard_() {
       unconfirmed:registrations.filter(function(row){return row.Status !== "Підтверджено" && row.Status !== "Допущено";}).length
     },
     sources:sources,
-    referrals:referrals,
     events:eventCounts
   };
 }
