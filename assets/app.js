@@ -629,9 +629,22 @@ function socialButton(name,label,url){return url?'<a class="social" target="_bla
 function renderSocials(settings=getLocalSettings()){
   const defaults={math:{telegram:"https://t.me/kolisnyk_academy",tiktok:"https://www.tiktok.com/@kolisnyk_academy",site:"https://olexanderkolsnyk.github.io/Kolisnyk-Academy/",viber:"https://r.mssg.me/m/697bfcc0610fc48495b6ee1d",instagram:"https://www.instagram.com/kolisnyk_academy",youtube:"https://www.youtube.com/@kolisnyk_academy"}};
   const s=settings.socials||{},merge=(base,values)=>({...base,...Object.fromEntries(Object.entries(values||{}).filter(([,value])=>value))}),m=merge(defaults.math,s.math);
-  mathSocials.innerHTML=socialButton("telegram","Telegram Kolisnyk Academy",m.telegram)+socialButton("tiktok","TikTok Kolisnyk Academy",m.tiktok)+socialButton("site","Сайт Kolisnyk Academy",m.site)+socialButton("viber","Viber Kolisnyk Academy",m.viber)+socialButton("instagram","Instagram Kolisnyk Academy",m.instagram)+socialButton("youtube","YouTube Kolisnyk Academy",m.youtube);
+  const target=document.getElementById("mathSocials");if(!target)return;
+  target.innerHTML=socialButton("telegram","Telegram Kolisnyk Academy",m.telegram)+socialButton("tiktok","TikTok Kolisnyk Academy",m.tiktok)+socialButton("site","Сайт Kolisnyk Academy",m.site)+socialButton("viber","Viber Kolisnyk Academy",m.viber)+socialButton("instagram","Instagram Kolisnyk Academy",m.instagram)+socialButton("youtube","YouTube Kolisnyk Academy",m.youtube);
 }
 renderSocials();
+
+const prepMessages={
+  "НМТ":"<strong>Добре.</strong> У чаті уточнимо стартовий рівень, бажаний бал і термін підготовки.",
+  "Школа":"<strong>Добре.</strong> Уточнимо клас, складні теми та підберемо комфортний темп занять.",
+  "Поглиблено":"<strong>Добре.</strong> З’ясуємо напрям і запропонуємо викладача для сильнішої програми.",
+  "Порада":"<strong>Це нормально.</strong> Менеджер поставить кілька коротких запитань і допоможе визначитися."
+};
+document.querySelectorAll("[data-prep-goal]").forEach(button=>button.addEventListener("click",()=>{
+  document.querySelectorAll("[data-prep-goal]").forEach(item=>item.classList.remove("active"));
+  button.classList.add("active");
+  const recommendation=document.getElementById("prepRecommendation");if(recommendation)recommendation.innerHTML=prepMessages[button.dataset.prepGoal]||prepMessages.Порада;
+}));
 
 document.addEventListener("click",event=>{
   const control=event.target.closest("button,a");if(!control||!eventRegistrationId())return;
@@ -641,7 +654,7 @@ document.addEventListener("click",event=>{
   else if(control.id==="mobileSupport"){eventName="support_click";category="support"}
   else if(nav==="tutors"){eventName="preparation_open";category="preparation"}
   else if(/t\.me\/kolisnyk_academy/.test(href)){eventName="kolisnyk_telegram_click";category="social"}
-  else if(/instagram\.com\/kolisnyk_academy/.test(href)){eventName="kolisnyk_instagram_click";category="social"}
+  else if(/(?:instagram\.com\/kolisnyk_academy|ig\.me\/m\/kolisnyk_academy)/.test(href)){eventName="kolisnyk_instagram_click";category="social"}
   else if(/tiktok\.com\/@kolisnyk_academy/.test(href)){eventName="kolisnyk_tiktok_click";category="social"}
   logEvent(eventName,category,target);
 });
