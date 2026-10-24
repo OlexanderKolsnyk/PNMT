@@ -6,7 +6,7 @@
 <title>Пробний мультитест — Kolisnyk Academy</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=1">
 <meta name="description" content="Пробний НМТ у форматі, наближеному до реального тестувальника: реєстрація, персональний доступ, 2 етапи, 20-хвилинна перерва та 4 предмети.">
-<link rel="stylesheet" href="assets/styles.css?v=58">
+<link rel="stylesheet" href="assets/styles.css?v=59">
 <!-- Microsoft Clarity -->
 <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
@@ -20,7 +20,7 @@
 
 <header class="top"><div class="topin">
 <button class="brand" id="brandHome"><span class="logo">PM</span><span><strong>Пробний мультитест</strong><small>Розроблено Kolisnyk Academy</small></span></button>
-<nav class="desktop-nav" aria-label="Основна навігація"><button data-nav="ended" class="post-event-only" hidden>Завершити тест</button><button data-nav="home" class="active">Головна</button><button data-nav="register">Реєстрація</button><button data-nav="tutors">Підготовка</button><button data-nav="login">Вхід</button></nav>
+<nav class="desktop-nav" aria-label="Основна навігація"><button data-nav="ended" class="post-event-only" hidden>Завершити тест</button><button data-nav="home" class="active">Головна</button><button data-nav="register">Реєстрація</button><button data-nav="tutors">Підготовка</button><button data-nav="login">Вхід</button><a class="telegram-bot-nav" href="https://t.me/Kolisnyk_academy_bot" target="_blank" rel="noopener">Telegram-бот</a></nav>
 </div></header>
 
 <nav class="mobile-nav" aria-label="Мобільна навігація">
@@ -29,7 +29,7 @@
 <button data-nav="register">Реєстрація</button>
 <button data-nav="login" class="mobile-login"><svg class="mobile-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M14 8l4 4-4 4M8 12h10"/></svg><span>Вхід</span></button>
 <button data-nav="tutors">Підготовка</button>
-<a id="mobileSupport" href="https://t.me/kolisnyk_academy" target="_blank" rel="noopener">Допомога</a>
+<a id="mobileSupport" class="mobile-bot-link" href="https://t.me/Kolisnyk_academy_bot" target="_blank" rel="noopener">TG-бот</a>
 </nav>
 
 <main class="wrap">
@@ -49,7 +49,7 @@
 <div class="count"><strong id="seconds">00</strong><span>секунд</span></div>
 </div></div>
 <div class="schedule"><div><strong>10:00–12:00</strong><span>Перша сесія: українська мова + математика</span></div><div><strong>12:00–12:20</strong><span>Перерва. Якщо завершиш раніше — відпочиваєш до 12:20</span></div><div><strong>12:20–14:20</strong><span>Друга сесія: історія України + англійська</span></div></div>
-<div class="actions"><button id="homeRegisterBtn" class="btn primary" data-nav="register">Зареєструватися</button><button id="homeLoginBtn" class="btn ghost" data-nav="login">Увійти до кабінету</button><button class="btn ghost" data-nav="tutors" data-prep-target="academyPrep">Підготовка в Kolisnyk Academy</button></div>
+<div class="actions"><button id="homeRegisterBtn" class="btn primary" data-nav="register">Зареєструватися</button><a class="btn telegram-bot-btn" href="https://t.me/Kolisnyk_academy_bot" target="_blank" rel="noopener">Перейти в Telegram-бот</a><button id="homeLoginBtn" class="btn ghost" data-nav="login">Увійти до кабінету</button><button class="btn ghost" data-nav="tutors" data-prep-target="academyPrep">Підготовка в Kolisnyk Academy</button></div>
 </div>
 
 <div class="card">
@@ -71,7 +71,7 @@
 <details><summary>Скільки триватиме тест?</summary><p>Перша сесія триває з 10:00 до 12:00. О 12:00 вона завершується автоматично, після чого триває перерва до 12:20. Якщо завершиш раніше, матимеш довшу перерву. Друга сесія проходить з 12:20 до 14:20.</p></details>
 <details><summary>Що буде, якщо не завершити першу сесію до 12:00?</summary><p>О 12:00 перша сесія завершується автоматично. Якщо учасник не завершив її самостійно вчасно, за цю сесію відображатиметься 0. Дані виконання зберігаються для організатора.</p></details>
 <details><summary>Можна проходити з телефона?</summary><p>Так. Сайт адаптований для смартфона. Але для самого тесту, якщо є можливість, зручніше використовувати ноутбук або комп'ютер.</p></details>
-<details><summary>Що буде після реєстрації?</summary><p>Команда отримає твою заявку. Важливу організаційну інформацію та доступ надішлемо за вказаними контактами.</p></details>
+<details><summary>Що буде після реєстрації?</summary><p>Одразу відкрий наш <a class="telegram-bot-inline" href="https://t.me/Kolisnyk_academy_bot" target="_blank" rel="noopener">Telegram-бот</a>, натисни «Start / Розпочати» та отримай персональні дані для входу.</p></details>
 <details><summary>Що робити, якщо помилився / помилилася в Telegram?</summary><p>Напиши нам у Telegram підтримки та вкажи ім'я, з яким реєструвався / реєструвалася.</p></details>
 </div></div>
 </section>
@@ -128,8 +128,8 @@
 <div class="field full"><label for="regCity">Місто</label><input id="regCity" autocomplete="address-level2" required placeholder="Київ"></div>
 </div>
 <div class="notice"><b>Перевір Telegram перед відправленням.</b> Вкажи актуальний <b>@username</b>. Якщо username неправильний або з тобою неможливо зв'язатися, ми не зможемо підтвердити участь та надіслати важливу інформацію.</div>
-<div class="notice wait-notice"><b>Після надсилання форми перейдіть у Telegram-бот.</b> Там можна отримати індивідуальні логін і пароль для входу.</div>
-<div class="actions"><button class="btn primary" type="submit">Надіслати заявку</button></div>
+<div class="notice wait-notice"><b>Після надсилання форми обов’язково перейдіть у Telegram-бот.</b> Натисніть «Start / Розпочати», щоб отримати індивідуальні логін і пароль.<a class="telegram-bot-inline telegram-bot-notice" href="https://t.me/Kolisnyk_academy_bot" target="_blank" rel="noopener">Відкрити Telegram-бот →</a></div>
+<div class="actions registration-actions"><button class="btn primary" type="submit">Надіслати заявку</button><a class="btn telegram-bot-btn" href="https://t.me/Kolisnyk_academy_bot" target="_blank" rel="noopener">Після заявки — відкрити Telegram-бот</a></div>
 <div id="registrationStatus" class="status"></div>
 </form>
 </div>
@@ -153,7 +153,7 @@
     <div class="actions"><button class="btn primary" type="submit">Увійти</button></div>
     <div id="loginStatus" class="status"></div>
   </form>
-<div class="support"><p><b>Не можеш увійти?</b><br>Напиши нам — допоможемо перевірити доступ.</p><a id="supportLogin" class="btn ghost" href="https://t.me/kolisnyk_academy" target="_blank" rel="noopener">Написати в Telegram</a></div>
+<div class="support"><p><b>Ще не отримав/ла логін і пароль?</b><br>Відкрий Telegram-бот і натисни «Start / Розпочати». Якщо потрібна допомога — напиши менеджеру.</p><div class="actions"><a class="btn telegram-bot-btn" href="https://t.me/Kolisnyk_academy_bot" target="_blank" rel="noopener">Отримати доступ у Telegram-боті</a><a id="supportLogin" class="btn ghost" href="https://t.me/kolisnyk_academy" target="_blank" rel="noopener">Написати менеджеру</a></div></div>
 </div>
 </section>
 
@@ -407,8 +407,9 @@
 </div>
 
 <div id="warningToast" class="warning-toast" role="status" aria-live="assertive"></div>
+<a class="telegram-bot-float" href="https://t.me/Kolisnyk_academy_bot" target="_blank" rel="noopener" aria-label="Відкрити Telegram-бот Kolisnyk Academy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 3.8 9.6c-1.2.5-1.2 1.2-.2 1.5l4.4 1.4 1.7 5.2c.2.7.1 1 .8 1 .5 0 .8-.2 1-.5l2.5-2.4 5 3.7c.9.5 1.6.2 1.8-.9L23 4.5C23.3 3.2 22.5 2.6 21 3Z"/></svg><span>Telegram-бот</span></a>
 <script src="assets/exam-data.js?v=45"></script>
-<script src="assets/app.js?v=62"></script>
+<script src="assets/app.js?v=63"></script>
 
 </body>
 </html>

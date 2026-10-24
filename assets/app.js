@@ -353,7 +353,12 @@ document.getElementById("registrationForm").addEventListener("submit",async e=>{
       box.innerHTML=`<b>Демо-реєстрацію збережено локально.</b><br>Логін і пароль можна отримати в Telegram-боті.<br><a class="btn primary" style="margin-top:12px" href="https://t.me/${encodeURIComponent(CONFIG.TELEGRAM_BOT_USERNAME)}" target="_blank" rel="noopener">Отримати пароль у Telegram-боті</a>`;
       e.target.reset();
     }
-  }catch(err){box.className="status err show";box.textContent=err.message}
+  }catch(err){
+    const message=String(err&&err.message||"Не вдалося надіслати заявку.");
+    const completed=/завершено|отримано|вже є|already|duplicate/i.test(message);
+    box.className=`status ${completed?"ok":"err"} show`;
+    box.innerHTML=`<b>${completed?"Заявку вже зареєстровано.":message}</b><br>${completed?"Перейдіть у Telegram-бот, щоб отримати логін і пароль.":"Спробуйте ще раз або напишіть менеджеру."}<br><a class="btn telegram-bot-btn" style="margin-top:12px" href="https://t.me/${encodeURIComponent(CONFIG.TELEGRAM_BOT_USERNAME)}" target="_blank" rel="noopener">Перейти в Telegram-бот</a>`;
+  }
   finally{submitButton.disabled=false;submitButton.textContent=submitLabel}
 });
 
