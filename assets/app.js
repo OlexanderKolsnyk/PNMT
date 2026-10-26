@@ -1,5 +1,5 @@
 const CONFIG={
-  SHEETS_ENDPOINT:"https://script.google.com/macros/s/AKfycbwKbPlcaCvSNmSGqSJi156PL4HdRft3kqKv8Rl4FQnmAuDoN4gqMdWGJomh3IflILH4/exec",
+  SHEETS_ENDPOINT:"https://script.google.com/macros/s/AKfycbw0Lj8RtqIamar2h9yXeazFTadYvfIfsTqUpcKcPK1mEi8cV-XqfP97SzwzVKRu-IeN/exec",
   ANALYTICS_ENDPOINT:"https://script.google.com/macros/s/AKfycbw4sVRam4j1jR6TAq7AgqKHczS7NFXvvdI6iFjin1Pu0gS0E5HSGZ_4VHiGMeetojlIUA/exec",
   DEFAULT_DEADLINE:"2026-10-30T23:59",
   DEFAULT_TEST_START:"2026-10-31T10:00",
