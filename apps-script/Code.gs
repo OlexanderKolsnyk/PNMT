@@ -29,7 +29,7 @@ const DEFAULT_SETTINGS = {
 
 const PUBLIC_SETTING_KEYS = Object.keys(DEFAULT_SETTINGS);
 const ALLOWED_STATUSES = [
-  "Нова реєстрація","Підтверджено","Допущено","Відмовлено","Дубль","Проблема з контактом"
+  "Нова реєстрація","Запізніла реєстрація","Підтверджено","Допущено","Відмовлено","Дубль","Проблема з контактом"
 ];
 const ALLOWED_EVENTS = new Set([
   "registration_success","preparation_open","support_click",
@@ -75,13 +75,9 @@ function setupSheets() {
 
 function register_(payload) {
   const settings = getSettingsMap_();
-  if (String(settings.RegistrationOpen).toLowerCase() !== "true") {
-    throw new Error("Реєстрацію тимчасово закрито.");
-  }
   const deadline = new Date(settings.RegistrationDeadline || DEFAULT_SETTINGS.RegistrationDeadline);
-  if (Number.isNaN(deadline.getTime()) || Date.now() > deadline.getTime()) {
-    throw new Error("Реєстрацію вже завершено.");
-  }
+  const isLate = String(settings.RegistrationOpen).toLowerCase() !== "true" ||
+    Number.isNaN(deadline.getTime()) || Date.now() > deadline.getTime();
 
   const values = {
     name:clean_(payload.name,160), phone:clean_(payload.phone,80),
@@ -99,7 +95,7 @@ function register_(payload) {
   const record = {
     RegistrationID:registrationId, Timestamp:new Date(), Name:values.name, Phone:values.phone,
     Telegram:values.telegram, Email:values.email, Grade:values.grade, City:values.city,
-    Status:"Нова реєстрація",
+    Status:isLate ? "Запізніла реєстрація" : "Нова реєстрація",
     FirstUTMSource:clean_(payload.first_utm_source,200),
     FirstUTMMedium:clean_(payload.first_utm_medium,200),
     FirstUTMCampaign:clean_(payload.first_utm_campaign,200),
@@ -112,13 +108,14 @@ function register_(payload) {
     LastUTMTerm:clean_(payload.last_utm_term,200),
     InitialReferrer:clean_(payload.initial_referrer,500),
     InitialLandingPage:clean_(payload.initial_landing_page,500),
-    Login:"",PasswordHash:"",PasswordSalt:"",AccessStatus:"",CredentialIssuedAt:""
+    Login:"",PasswordHash:"",PasswordSalt:"",
+    AccessStatus:isLate ? "Без доступу" : "",CredentialIssuedAt:""
   };
 
   withLock_(function() {
     appendRecord_(ensureSheet_(getSpreadsheet_(),"Registrations",REGISTRATION_HEADERS),record);
   });
-  return {ok:true,registration_id:registrationId};
+  return {ok:true,registration_id:registrationId,late:isLate,status:record.Status};
 }
 
 function logEvent_(payload) {
@@ -269,6 +266,11 @@ function adminGenerateCredentials_(payload) {
   const row = findRowByValue_(sheet,"RegistrationID",id);
   if (!row) throw new Error("Учасника не знайдено.");
   const headers = sheetHeaders_(sheet);
+  const status = String(sheet.getRange(row,headers.indexOf("Status")+1).getValue() || "");
+  const accessStatus = String(sheet.getRange(row,headers.indexOf("AccessStatus")+1).getValue() || "");
+  if (status === "Запізніла реєстрація" || accessStatus === "Без доступу") {
+    throw new Error("Для запізнілої реєстрації доступ до тесту не створюється.");
+  }
   const currentHash = String(sheet.getRange(row,headers.indexOf("PasswordHash")+1).getValue() || "");
   if (currentHash && !regenerate) throw new Error("Доступ уже створено. Використайте перегенерацію.");
 

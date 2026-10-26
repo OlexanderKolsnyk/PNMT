@@ -287,7 +287,7 @@ function updateScheduledExperience(now=siteNow()){
   const registerButtons=document.querySelectorAll('[data-nav="register"]');
   const homeRegister=document.getElementById('homeRegisterBtn'),homeLogin=document.getElementById('homeLoginBtn');
   document.body.classList.toggle('registration-closed',now>REGISTRATION_DEADLINE);
-  registerButtons.forEach(button=>{button.hidden=now>REGISTRATION_DEADLINE});
+  registerButtons.forEach(button=>{button.hidden=false});
   document.querySelectorAll('.exam-day-only').forEach(button=>{button.hidden=now<=REGISTRATION_DEADLINE||now>=PUBLIC_END_SCREEN_AT});
   if(homeLogin){homeLogin.hidden=now<EXAM_DAY_START||now>=PUBLIC_END_SCREEN_AT;homeLogin.classList.toggle('primary',now>=EXAM_DAY_START);homeLogin.classList.toggle('ghost',now<EXAM_DAY_START)}
   if(now<=REGISTRATION_DEADLINE){
@@ -305,7 +305,11 @@ function updateScheduledExperience(now=siteNow()){
   }else{
     setText('homeEyebrow','Завершення');setText('homeTitle','Завершуємо мультитест');setText('homeLead','Час вийшов. Зберігаємо відповіді та формуємо результат.');setText('homePhaseLabel','Будь ласка, зачекай');setText('homePhaseValue','Не закривай сторінку ще кілька секунд');paintCountdown(PUBLIC_END_SCREEN_AT);
   }
-  if(homeRegister)homeRegister.disabled=now>REGISTRATION_DEADLINE;
+  if(homeRegister){homeRegister.disabled=false;homeRegister.textContent=now>REGISTRATION_DEADLINE?'Залишити заявку':'Зареєструватися'}
+  const registrationLead=document.getElementById('registrationLead');
+  if(registrationLead)registrationLead.textContent=now>REGISTRATION_DEADLINE
+    ? 'Основна реєстрація завершена. Ви все одно можете залишити контакти: заявку збережемо як запізнілу, але доступ до цього тестування не надаватиметься.'
+    : 'Заявки приймаємо до 30 жовтня 2026, 23:59 за київським часом.';
   updateLoginAvailability(now);updateLobbyAvailability(now);applyPublicPhase(now);
 }
 document.getElementById("brandHome").addEventListener("click",()=>{if(activeExamStage()&&!publicEndReached()){alert("Спочатку завершіть активний етап тестування.");return}showView(publicEndReached()?"ended":"home")});
@@ -323,10 +327,6 @@ document.getElementById("registrationForm").addEventListener("submit",async e=>{
     box.className="status err show";
     box.textContent="Telegram має бути у форматі @username (5–32 символи після @).";
     return;
-  }
-  const settings=getLocalSettings();
-  if(!settings.registrationOpen || new Date()>new Date(settings.deadline.length===16?settings.deadline+":00+02:00":settings.deadline)){
-    box.className="status err show";box.textContent="Реєстрацію вже закрито.";return;
   }
   const p={
     action:"register",
@@ -347,7 +347,9 @@ document.getElementById("registrationForm").addEventListener("submit",async e=>{
       const res=await api(p);
       if(res.registration_id){localStorage.setItem(STORAGE.registrationId,res.registration_id);logEvent("registration_success","registration","form")}
       box.className="status ok show";
-      box.innerHTML=`<b>Реєстрацію отримано.</b><br>Логін і пароль можна отримати в Telegram-боті.<br><a class="btn primary" style="margin-top:12px" href="https://t.me/${encodeURIComponent(CONFIG.TELEGRAM_BOT_USERNAME)}" target="_blank" rel="noopener">Отримати пароль у Telegram-боті</a>`;e.target.reset();
+      box.innerHTML=res.late
+        ? '<b>Ваші дані збережено.</b><br>Основний дедлайн уже минув, тому заявку позначено як запізнілу. Доступ до цього тестування не надається, але команда Kolisnyk Academy зможе зв’язатися з вами.'
+        : `<b>Реєстрацію отримано.</b><br>Логін і пароль можна отримати в Telegram-боті.<br><a class="btn primary" style="margin-top:12px" href="https://t.me/${encodeURIComponent(CONFIG.TELEGRAM_BOT_USERNAME)}" target="_blank" rel="noopener">Отримати пароль у Telegram-боті</a>`;e.target.reset();
     }else{
       const list=getLocalParticipants();
       if(list.some(x=>x.email.toLowerCase()===p.email.toLowerCase()||x.telegram.toLowerCase()===p.telegram.toLowerCase())){
