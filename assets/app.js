@@ -363,7 +363,7 @@ document.getElementById("registrationForm").addEventListener("submit",async e=>{
     }
   }catch(err){
     const message=String(err&&err.message||"Не вдалося надіслати заявку.");
-    const completed=/завершено|отримано|вже є|already|duplicate/i.test(message);
+    const completed=/заявк(?:а|у).*вже (?:є|зареєстровано)|already registered|duplicate/i.test(message);
     box.className=`status ${completed?"ok":"err"} show`;
     box.innerHTML=`<b>${completed?"Заявку вже зареєстровано.":message}</b><br>${completed?"Перейдіть у Telegram-бот, щоб отримати логін і пароль.":"Спробуйте ще раз або напишіть менеджеру."}<br><a class="btn telegram-bot-btn" style="margin-top:12px" href="https://t.me/${encodeURIComponent(CONFIG.TELEGRAM_BOT_USERNAME)}" target="_blank" rel="noopener">Перейти в Telegram-бот</a>`;
   }
