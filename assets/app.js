@@ -1,5 +1,6 @@
 const CONFIG={
   SHEETS_ENDPOINT:"https://script.google.com/macros/s/AKfycbwKbPlcaCvSNmSGqSJi156PL4HdRft3kqKv8Rl4FQnmAuDoN4gqMdWGJomh3IflILH4/exec",
+  ANALYTICS_ENDPOINT:"https://script.google.com/macros/s/AKfycbw4sVRam4j1jR6TAq7AgqKHczS7NFXvvdI6iFjin1Pu0gS0E5HSGZ_4VHiGMeetojlIUA/exec",
   DEFAULT_DEADLINE:"2026-10-30T23:59",
   DEFAULT_TEST_START:"2026-10-31T10:00",
   DEFAULT_TEST_END:"2026-10-31T14:20",
@@ -22,6 +23,7 @@ const STORAGE=Object.fromEntries(Object.entries({
   submissionId:"probne_nmt_submission_id_v39",
   registrationId:"probne_nmt_registration_id_v1",
   attribution:"probne_nmt_attribution_v1",
+  analyticsVisitorId:"probne_nmt_analytics_visitor_v1",
   visited:"probne_nmt_visited_v4",
   flagged:"probne_nmt_flagged_v4"
 }).map(([name,key])=>[name,STORAGE_PREFIX+key]));
@@ -152,12 +154,18 @@ function captureAttribution(){
 }
 const ATTRIBUTION=captureAttribution();
 function attributionPayload(){const first=ATTRIBUTION.first||{},last=ATTRIBUTION.last||first;return {first_utm_source:first.utm_source||"",first_utm_medium:first.utm_medium||"",first_utm_campaign:first.utm_campaign||"",first_utm_content:first.utm_content||"",first_utm_term:first.utm_term||"",last_utm_source:last.utm_source||"",last_utm_medium:last.utm_medium||"",last_utm_campaign:last.utm_campaign||"",last_utm_content:last.utm_content||"",last_utm_term:last.utm_term||"",initial_referrer:first.initial_referrer||"",initial_landing_page:first.initial_landing_page||""}}
+function analyticsId(storage,key,prefix){let value=storage.getItem(key);if(!value){value=prefix+"-"+(crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random().toString(36).slice(2));storage.setItem(key,value)}return value}
+const ANALYTICS_VISITOR_ID=analyticsId(localStorage,STORAGE.analyticsVisitorId,"visitor");
+const ANALYTICS_SESSION_ID=analyticsId(sessionStorage,STORAGE_PREFIX+"analytics_session_v1","session");
+function analyticsSequence(){const key=STORAGE_PREFIX+"analytics_sequence_v1",value=Number(sessionStorage.getItem(key)||"0")+1;sessionStorage.setItem(key,String(value));return value}
+function analyticsWeek(date){const current=new Date(Date.UTC(date.getUTCFullYear(),date.getUTCMonth(),date.getUTCDate()));current.setUTCDate(current.getUTCDate()+4-(current.getUTCDay()||7));const yearStart=new Date(Date.UTC(current.getUTCFullYear(),0,1)),week=Math.ceil((((current-yearStart)/86400000)+1)/7);return current.getUTCFullYear()+"-W"+String(week).padStart(2,"0")}
+function analyticsText(value,max=240){return String(value||"").replace(/\s+/g," ").trim().slice(0,max)}
 function eventRegistrationId(){return app.user?.registration_id||localStorage.getItem(STORAGE.registrationId)||""}
-function logEvent(eventName,eventCategory,target){
-  const registrationId=eventRegistrationId();if(!registrationId||!CONFIG.SHEETS_ENDPOINT)return;
-  const last=ATTRIBUTION.last||ATTRIBUTION.first||{},payload={action:"logEvent",registration_id:registrationId,event_name:eventName,event_category:eventCategory||"engagement",target:String(target||"").slice(0,200),page:location.pathname,utm_source:last.utm_source||"",utm_medium:last.utm_medium||"",utm_campaign:last.utm_campaign||"",utm_content:last.utm_content||""},body=JSON.stringify(payload);
-  if(navigator.sendBeacon){navigator.sendBeacon(CONFIG.SHEETS_ENDPOINT,new Blob([body],{type:"text/plain;charset=utf-8"}));return}
-  fetch(CONFIG.SHEETS_ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body,keepalive:true,mode:"no-cors"}).catch(()=>{});
+function logEvent(eventName,eventCategory,target,details={}){
+  if(!CONFIG.ANALYTICS_ENDPOINT)return;
+  const now=new Date(),last=ATTRIBUTION.last||ATTRIBUTION.first||{},payload={type:"analytics",site:"pnmt",event:eventName,event_category:eventCategory||"engagement",registration_id:eventRegistrationId(),visitor_id:ANALYTICS_VISITOR_ID,session_id:ANALYTICS_SESSION_ID,sequence:analyticsSequence(),client_timestamp:now.toISOString(),week_key:analyticsWeek(now),control_type:details.control_type||"",element_id:details.element_id||"",target:String(target||"").slice(0,200),text:analyticsText(details.text),href:String(details.href||"").slice(0,700),page:(location.pathname+location.search+location.hash).slice(0,500),referrer:(document.referrer||"").slice(0,500),utm_source:last.utm_source||"",utm_medium:last.utm_medium||"",utm_campaign:last.utm_campaign||"",utm_content:last.utm_content||"",details:{event_category:eventCategory||"engagement",target:String(target||"").slice(0,200),control_type:details.control_type||"",element_id:details.element_id||"",text:analyticsText(details.text),href:String(details.href||"").slice(0,700)}},body=JSON.stringify(payload);
+  if(navigator.sendBeacon){navigator.sendBeacon(CONFIG.ANALYTICS_ENDPOINT,new Blob([body],{type:"text/plain;charset=utf-8"}));return}
+  fetch(CONFIG.ANALYTICS_ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body,keepalive:true,mode:"no-cors"}).catch(()=>{});
 }
 function pendingResults(){return safeParse(localStorage.getItem(STORAGE.pendingResults)||"[]",[])}
 function savePendingResults(items){if(items.length)localStorage.setItem(STORAGE.pendingResults,JSON.stringify(items));else localStorage.removeItem(STORAGE.pendingResults)}
@@ -652,17 +660,18 @@ document.querySelectorAll("[data-prep-goal]").forEach(button=>button.addEventLis
 }));
 
 document.addEventListener("click",event=>{
-  const control=event.target.closest("button,a");if(!control||!eventRegistrationId())return;
+  const control=event.target.closest("button,a");if(!control||control.disabled||control.getAttribute("aria-disabled")==="true")return;
   const href=control.getAttribute("href")||"",nav=control.dataset.nav||"",target=control.id||nav||href||control.textContent.trim().slice(0,80);
-  let eventName="ui_click",category="navigation";
+  let eventName=control.tagName==="A"?"link_click":"button_click",category="navigation";
   if(control.id==="telegramResultBtn"){eventName="result_telegram_click";category="result"}
   else if(control.id==="mobileSupport"){eventName="support_click";category="support"}
   else if(nav==="tutors"){eventName="preparation_open";category="preparation"}
   else if(/t\.me\/kolisnyk_academy/.test(href)){eventName="kolisnyk_telegram_click";category="social"}
   else if(/(?:instagram\.com\/kolisnyk_academy|ig\.me\/m\/kolisnyk_academy)/.test(href)){eventName="kolisnyk_instagram_click";category="social"}
   else if(/tiktok\.com\/@kolisnyk_academy/.test(href)){eventName="kolisnyk_tiktok_click";category="social"}
-  logEvent(eventName,category,target);
+  logEvent(eventName,category,target,{control_type:control.tagName==="A"?"link":"button",element_id:control.id||"",text:control.getAttribute("aria-label")||control.textContent,href:control.href||""});
 });
+window.addEventListener("load",()=>logEvent("page_view","navigation",document.title));
 rulesAgree.addEventListener("change",()=>updateLobbyAvailability());
 
 /* Прихований вхід в адмінку: 6 кліків по номеру версії або Ctrl+Shift+K.
