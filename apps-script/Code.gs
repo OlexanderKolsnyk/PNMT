@@ -113,7 +113,7 @@ function register_(payload) {
   };
 
   withLock_(function() {
-    appendRecord_(ensureSheet_(getSpreadsheet_(),"Registrations",REGISTRATION_HEADERS),record);
+    writeRecordToFirstFreeRow_(ensureSheet_(getSpreadsheet_(),"Registrations",REGISTRATION_HEADERS),record);
   });
   return {ok:true,registration_id:registrationId,late:isLate,status:record.Status};
 }
@@ -405,6 +405,26 @@ function appendRecord_(sheet,record) {
   sheet.appendRow(headers.map(function(header){
     return Object.prototype.hasOwnProperty.call(record,header) ? record[header] : "";
   }));
+}
+
+function writeRecordToFirstFreeRow_(sheet,record) {
+  const headers = sheetHeaders_(sheet);
+  const values = headers.map(function(header){
+    return Object.prototype.hasOwnProperty.call(record,header) ? record[header] : "";
+  });
+  const maxRows = sheet.getMaxRows();
+  let targetRow = maxRows + 1;
+
+  if (maxRows >= 2) {
+    const rows = sheet.getRange(2,1,maxRows-1,headers.length).getDisplayValues();
+    const emptyIndex = rows.findIndex(function(row) {
+      return row.every(function(value){return String(value).trim() === "";});
+    });
+    if (emptyIndex >= 0) targetRow = emptyIndex + 2;
+  }
+
+  if (targetRow > maxRows) sheet.insertRowAfter(maxRows);
+  sheet.getRange(targetRow,1,1,values.length).setValues([values]);
 }
 
 function readObjects_(sheet) {
