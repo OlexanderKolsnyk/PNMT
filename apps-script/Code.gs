@@ -48,6 +48,7 @@ function doPost(e) {
     const action = clean_(payload.action, 80);
     if (action === "publicConfig") return json_({ok:true,config:publicConfig_()});
     if (action === "register") return json_(register_(payload));
+    if (action === "login") return json_(participantLogin_(payload));
     if (action === "logEvent") return json_(logEvent_(payload));
     if (action === "adminLogin") return json_(adminLogin_(payload));
     if (action === "adminLogout") return json_(adminLogout_(payload));
@@ -148,6 +149,48 @@ function publicConfig_() {
   const config = {};
   PUBLIC_SETTING_KEYS.forEach(function(key) { config[key] = clean_(settings[key],500); });
   return config;
+}
+
+function participantLogin_(payload) {
+  const login = clean_(payload.login,80);
+  const password = String(payload.password == null ? "" : payload.password).slice(0,200);
+  const cache = CacheService.getScriptCache();
+  const failureKey = "participant_login_failures_" + digestHex_(login.toLowerCase()).slice(0,32);
+  const failures = Number(cache.get(failureKey) || "0");
+  if (failures >= 5) throw new Error("Забагато спроб. Спробуйте через 15 хвилин.");
+
+  const sheet = ensureSheet_(getSpreadsheet_(),"Registrations",REGISTRATION_HEADERS);
+  const row = login ? findRowByValue_(sheet,"Login",login) : 0;
+  let valid = false;
+  let record = null;
+
+  if (row) {
+    const headers = sheetHeaders_(sheet);
+    const values = sheet.getRange(row,1,1,headers.length).getValues()[0];
+    record = {};
+    headers.forEach(function(header,index){record[header]=values[index];});
+    const storedHash = String(record.PasswordHash || "");
+    const salt = String(record.PasswordSalt || "");
+    const accessStatus = String(record.AccessStatus || "");
+    valid = Boolean(storedHash && salt && accessStatus === "Активний") &&
+      safeEqual_(digestHex_(salt + ":" + password),storedHash);
+  }
+
+  if (!valid) {
+    cache.put(failureKey,String(failures + 1),900);
+    throw new Error("Невірний логін або пароль.");
+  }
+
+  cache.remove(failureKey);
+  return {
+    ok:true,
+    user:{
+      registration_id:String(record.RegistrationID || ""),
+      name:String(record.Name || ""),
+      login:String(record.Login || login),
+      testAccess:String(record.Status || "") === "Тестовий"
+    }
+  };
 }
 
 function adminLogin_(payload) {
