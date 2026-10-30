@@ -103,16 +103,23 @@ function pnmtSaveResult_(payload) {
   if (!/^[A-Za-z0-9_-]{8,100}$/.test(String(payload.client_submission_id || ""))) throw new Error("Некоректний ідентифікатор спроби.");
   if (!payload.answers || typeof payload.answers !== "object" || Array.isArray(payload.answers)) throw new Error("Некоректні відповіді.");
   if (!user.testAccess && Date.now() < Date.parse("2026-10-31T10:00:00+02:00")) throw new Error("Тестування ще не почалося.");
-  return withLock_(function() {
     const spreadsheet = getSpreadsheet_(),registrations = spreadsheet.getSheetByName("Registrations");
     const participantRow = findRowByValue_(registrations,"RegistrationID",user.registration_id);
     if (!participantRow) throw new Error("Реєстрацію не знайдено.");
     const headers = sheetHeaders_(registrations),record = {};
     registrations.getRange(participantRow,1,1,headers.length).getValues()[0].forEach(function(value,i){record[headers[i]]=value;});
     if (record.Login !== user.login || record.AccessStatus !== "Активний" || record.Status === "Запізніла реєстрація") throw new Error("Доступ до тестування відсутній.");
-    const sheet = ensureSheet_(spreadsheet,"Answers",PNMT_ANSWER_HEADERS);
     const attemptPrefix = PNMT_EXAM_VERSION+":"+digestHex_(user.registration_id).slice(0,24)+":";
     const attempt = attemptPrefix+digestHex_(payload.client_submission_id).slice(0,24);
+    const cache = CacheService.getScriptCache(),cacheKey="pnmt_result_"+digestHex_(attempt);
+    const confirmed=cache.get(cacheKey);
+    if(confirmed)return {ok:true,duplicate:true,results:user.testAccess?JSON.parse(confirmed):undefined};
+    // Authenticate and inspect the participant before taking the shared writer lock.
+    // Once confirmed, duplicate requests do not read or rewrite the answer sheet.
+    const committed=pnmtWithAnswerLock_(function() {
+    const concurrentConfirmation=cache.get(cacheKey);
+    if(concurrentConfirmation)return {graded:{results:JSON.parse(concurrentConfirmation)},duplicate:true,confirmed:true};
+    const sheet = ensureSheet_(spreadsheet,"Answers",PNMT_ANSWER_HEADERS);
     const previousRow = findRowByValue_(sheet,"AttemptID",attempt);
     let graded,duplicate = Boolean(previousRow);
     if (duplicate) {
@@ -146,11 +153,23 @@ function pnmtSaveResult_(payload) {
       sheet.getRange(firstRow,1,rows.length,answerHeaders.length).setValues(rows);
       SpreadsheetApp.flush();
     }
-    // Retrying after a failed summary update safely repairs these four cells only.
-    Object.keys(PNMT_SUBJECTS).forEach(function(subject){
-      registrations.getRange(participantRow,headerIndex_(registrations,PNMT_SUBJECTS[subject])).setValue(graded.results[subject].points);
+    return {graded:graded,duplicate:duplicate};
     });
+    // Different participants' summary cells can be written independently.
+    // Publish the cache confirmation only after all writes have succeeded.
+    if(!committed.confirmed){
+    const subjects=Object.keys(PNMT_SUBJECTS),columns=subjects.map(function(subject){return headers.indexOf(PNMT_SUBJECTS[subject])+1;});
+    const scores=subjects.map(function(subject){return committed.graded.results[subject].points;});
+    if(columns.some(function(column){return column<1;}))throw new Error("Відсутні колонки результатів.");
+    if(columns.every(function(column,i){return column===columns[0]+i;}))registrations.getRange(participantRow,columns[0],1,columns.length).setValues([scores]);
+    else subjects.forEach(function(subject,i){registrations.getRange(participantRow,columns[i]).setValue(scores[i]);});
     SpreadsheetApp.flush();
-    return {ok:true,duplicate:duplicate,results:user.testAccess?graded.results:undefined};
-  });
+    cache.put(cacheKey,JSON.stringify(committed.graded.results),21600);
+    }
+    return {ok:true,duplicate:committed.duplicate,results:user.testAccess?committed.graded.results:undefined};
+}
+
+function pnmtWithAnswerLock_(callback){
+  const lock=LockService.getScriptLock();lock.waitLock(20000);
+  try{return callback();}finally{lock.releaseLock();}
 }

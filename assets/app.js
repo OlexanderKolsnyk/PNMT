@@ -13,8 +13,9 @@ const CONFIG={
 // GitHub Pages repositories share an origin, so scope browser state to this site.
 // Keep the old unscoped keys untouched for the test site and recovery.
 const EXAM_CONTENT_VERSION="pnmt-2026-10-30";
+const EXAM_EVENT_ID="2026-10-31";
 const SITE_STORAGE_PREFIX="pnmt:"+new URL(".",location.href).pathname+":";
-const STORAGE_PREFIX=SITE_STORAGE_PREFIX+EXAM_CONTENT_VERSION+":";
+const STORAGE_PREFIX=SITE_STORAGE_PREFIX+EXAM_EVENT_ID+":"+EXAM_CONTENT_VERSION+":";
 const STORAGE=Object.fromEntries(Object.entries({
   participants:"probne_nmt_participants_v36",
   settings:"probne_nmt_settings_v36",
@@ -52,7 +53,7 @@ function paintCountdown(target){
 }
 function compactCountdown(target){const x=countdownParts(target);return [x.days?`${x.days} дн`:"",`${String(x.hours).padStart(2,"0")}:${String(x.minutes).padStart(2,"0")}:${String(x.seconds).padStart(2,"0")}`].filter(Boolean).join(" ")}
 
-function readStoredSession(){try{return JSON.parse(localStorage.getItem(STORAGE.session)||"null")}catch(e){return null}}
+function readStoredSession(){try{const session=JSON.parse(localStorage.getItem(STORAGE.session)||"null");return session?.eventId===EXAM_EVENT_ID?session:null}catch(e){return null}}
 const persistedSession=readStoredSession();
 const app={
   view:"home",
@@ -76,7 +77,7 @@ const app={
 const EXAM_SCHEDULE={login:Date.parse('2026-10-31T09:00:00+02:00'),start:Date.parse('2026-10-31T10:00:00+02:00'),firstEnd:Date.parse('2026-10-31T12:00:00+02:00'),secondStart:Date.parse('2026-10-31T12:20:00+02:00'),end:Date.parse('2026-10-31T14:20:00+02:00')};
 const REGISTRATION_DEADLINE=Date.parse('2026-10-30T23:59:00+02:00');
 const EXAM_DAY_START=Date.parse('2026-10-31T00:00:00+02:00');
-const PUBLIC_END_SCREEN_AT=Date.parse('2026-10-31T14:20:30+02:00');
+const PUBLIC_END_SCREEN_AT=EXAM_SCHEDULE.end;
 function isTestUser(){return app.user?.testAccess===true}
 const EMERGENCY_STAGE1_REOPEN_LOGINS=new Set(["pnmt-bef41caf78"]);
 function reopenEmergencyStage1IfNeeded(){
@@ -107,14 +108,15 @@ function loginFromName(name){return name.toLowerCase().replace(/[^a-zа-яіїє
 
 async function api(payload){
   if(!CONFIG.SHEETS_ENDPOINT) return null;
-  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),20000);
+  const timeoutMs=payload.action==="saveResult"?45000:20000;
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),timeoutMs);
   try{
     const r=await fetch(CONFIG.SHEETS_ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload),signal:controller.signal});
     const data=await r.json();
     if(!data.ok) throw new Error(data.error||"Помилка сервера");
     return data;
   }catch(error){
-    if(error?.name==="AbortError")throw new Error("Сервер не відповів за 20 секунд.");
+    if(error?.name==="AbortError")throw new Error("Сервер ще не підтвердив отримання. Сайт збереже відповіді й повторить надсилання.");
     throw error;
   }finally{clearTimeout(timeout)}
 }
@@ -143,11 +145,11 @@ function logEvent(eventName,eventCategory,target,details={}){
   if(navigator.sendBeacon){navigator.sendBeacon(CONFIG.ANALYTICS_ENDPOINT,new Blob([body],{type:"text/plain;charset=utf-8"}));return}
   fetch(CONFIG.ANALYTICS_ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body,keepalive:true,mode:"no-cors"}).catch(()=>{});
 }
-function pendingResults(){return safeParse(localStorage.getItem(STORAGE.pendingResults)||"[]",[])}
+function pendingResults(){const items=safeParse(localStorage.getItem(STORAGE.pendingResults)||"[]",[]);return Array.isArray(items)?items.filter(item=>item?.exam_version===EXAM_CONTENT_VERSION&&item?.exam_event_id===EXAM_EVENT_ID):[]}
 function savePendingResults(items){if(items.length)localStorage.setItem(STORAGE.pendingResults,JSON.stringify(items));else localStorage.removeItem(STORAGE.pendingResults)}
 function createSubmissionId(){return crypto.randomUUID?crypto.randomUUID():"sub-"+Date.now()+"-"+Math.random().toString(36).slice(2)}
 function currentSubmissionId(){let id=localStorage.getItem(STORAGE.submissionId);if(!id){id=createSubmissionId();localStorage.setItem(STORAGE.submissionId,id)}return id}
-function buildResultPayload(){return {action:"saveResult",exam_version:EXAM_CONTENT_VERSION,client_submission_id:currentSubmissionId(),login:app.user?.login||"",token:app.user?.token||"",answers:app.answers,answer_saved_at:app.answerTimes,attempt_started_at:app.attemptStartedAt?new Date(app.attemptStartedAt).toISOString():"",submitted_at:new Date().toISOString()}}
+function buildResultPayload(){return {action:"saveResult",exam_version:EXAM_CONTENT_VERSION,exam_event_id:EXAM_EVENT_ID,client_submission_id:currentSubmissionId(),login:app.user?.login||"",token:app.user?.token||"",answers:app.answers,answer_saved_at:app.answerTimes,attempt_started_at:app.attemptStartedAt?new Date(app.attemptStartedAt).toISOString():"",submitted_at:new Date().toISOString()}}
 function queueResult(payload){const items=pendingResults().filter(item=>item.client_submission_id!==payload.client_submission_id);items.push(payload);savePendingResults(items)}
 function renderResultResponse(response){
   const results=response?.results||{};
@@ -164,34 +166,55 @@ function showResultLoading(){
 }
 function showResultSaveError(message){
   resultLoading.classList.add("hide");resultLead.classList.add("hide");resultSuccessContent.classList.add("hide");retryResultBtn.classList.remove("hide");
-  resultErrorState.textContent="Не вдалося підтвердити збереження. Перевірте інтернет і повторіть спробу. "+(message||"");resultErrorState.classList.remove("hide");
+  resultErrorState.textContent="Не вдалося підтвердити збереження. Відповіді залишаються на цьому пристрої. "+(message||"");resultErrorState.classList.remove("hide");
 }
-async function flushPendingResults(showResult=false){
-  if(!navigator.onLine||!CONFIG.SHEETS_ENDPOINT){if(showResult)showResultSaveError("Сервер недоступний.");return false}
-  const items=pendingResults();if(!items.length)return true;
-  for(const item of [...items]){
-    try{
+let resultFlushPromise=null,resultFlushShowResult=false,lastResultFlushAt=0,lastResultSaveError="";
+const RESULT_RETRY_DELAY=30000+Math.floor(Math.random()*10000);
+function renderEndedDeliveryState(){
+  const state=document.getElementById("endedDeliveryState"),retry=document.getElementById("endedRetryResultBtn");
+  if(!state||!retry)return;
+  const pending=pendingResults().length>0;
+  state.hidden=!pending;retry.hidden=!pending||Boolean(resultFlushPromise);
+  state.className=pending?"status show "+(lastResultSaveError?"err":""):"status hide";
+  retry.classList.toggle("hide",!pending||Boolean(resultFlushPromise));
+  state.textContent=lastResultSaveError
+    ? "Відповіді збережені на цьому пристрої, але сервер ще не підтвердив отримання. "+lastResultSaveError
+    : "Зберігаємо ваші відповіді. Не закривайте сторінку, доки сервер не підтвердить отримання.";
+}
+function flushPendingResults(showResult=false){
+  resultFlushShowResult=resultFlushShowResult||showResult;
+  if(resultFlushPromise)return resultFlushPromise;
+  if(!pendingResults().length){resultFlushShowResult=false;return Promise.resolve(true)}
+  lastResultFlushAt=siteNow();lastResultSaveError="";
+  resultFlushPromise=Promise.resolve().then(async()=>{
+    if(!navigator.onLine||!CONFIG.SHEETS_ENDPOINT)throw new Error("Немає з’єднання із сервером. Перевірте інтернет і повторіть надсилання.");
+    for(const item of pendingResults()){
       const response=await api(item);
       savePendingResults(pendingResults().filter(x=>x.client_submission_id!==item.client_submission_id));
-      if(showResult)renderResultResponse(response);
-    }catch(error){
-      if(showResult)showResultSaveError(error.message);
-      return false;
+      if(resultFlushShowResult)renderResultResponse(response);
     }
-  }
-  if(!pendingResults().length)localStorage.removeItem(STORAGE.submissionId);
-  return true;
+    if(!pendingResults().length)localStorage.removeItem(STORAGE.submissionId);
+    return true;
+  }).catch(error=>{
+    lastResultSaveError=error.message;
+    if(resultFlushShowResult)showResultSaveError(error.message);
+    return false;
+  }).finally(()=>{
+    resultFlushPromise=null;resultFlushShowResult=false;renderEndedDeliveryState();
+  });
+  renderEndedDeliveryState();
+  return resultFlushPromise;
 }
 
 function activeExamStage(){return app.stage===1||app.stage===2||app.stage===3}
 function syncExamMode(){document.body.classList.toggle("exam-active",activeExamStage())}
 function saveExamSession(){
   if(!app.user)return;
-  localStorage.setItem(STORAGE.session,JSON.stringify({version:39,user:app.user,stage:app.stage,subject:app.subject,questionIndex:app.questionIndex,stageStartedAt:app.stageStartedAt,stageEndsAt:app.stageEndsAt,stage2StartsAt:app.stage2StartsAt,stage2RulesAccepted:app.stage2RulesAccepted===true,attemptStartedAt:app.attemptStartedAt,checkpointAt:Date.now()}));
+  localStorage.setItem(STORAGE.session,JSON.stringify({version:39,eventId:EXAM_EVENT_ID,user:app.user,stage:app.stage,subject:app.subject,questionIndex:app.questionIndex,stageStartedAt:app.stageStartedAt,stageEndsAt:app.stageEndsAt,stage2StartsAt:app.stage2StartsAt,stage2RulesAccepted:app.stage2RulesAccepted===true,attemptStartedAt:app.attemptStartedAt,checkpointAt:Date.now()}));
 }
 function armExamGuard(){if(activeExamStage()&&!history.state?.examGuard)history.pushState({examGuard:true},"",location.href)}
 function showView(id){
-  if(publicEndReached()&&!['ended','tutors','login'].includes(id))id='ended';
+  if(publicEndReached()&&!['ended','tutors','login','register'].includes(id))id='ended';
   if(activeExamStage()&&id!=="exam"&&!publicEndReached())return;
   app.view=id;
   if(id==='ended'||id==='tutors')document.getElementById('resultModal')?.classList.remove('show');
@@ -204,19 +227,21 @@ function showView(id){
 document.querySelectorAll("[data-nav]").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.nav)));
 function publicEndReached(now=siteNow()){return now>=PUBLIC_END_SCREEN_AT&&!isTestUser()}
 let publicEndTransitionRunning=false;
-function applyPublicPhase(now=Date.now()){
+function applyPublicPhase(now=siteNow()){
   const ended=publicEndReached(now);
   document.body.classList.toggle('test-ended',ended);
   document.querySelectorAll('.post-event-only').forEach(element=>{element.hidden=!ended});
   if(!ended)return false;
+  warningToast.classList.remove("show");
   if(activeExamStage()&&!publicEndTransitionRunning){
     publicEndTransitionRunning=true;
     finishWholeTest(true).catch(()=>{}).finally(()=>{publicEndTransitionRunning=false});
-  }else if(pendingResults().length){
+  }else if(pendingResults().length&&!resultFlushPromise&&siteNow()-lastResultFlushAt>=RESULT_RETRY_DELAY){
     flushPendingResults(false).catch(()=>{});
   }
   document.getElementById('resultModal')?.classList.remove('show');
-  if(!['ended','tutors'].includes(app.view))showView('ended');
+  if(!['ended','tutors','register','login'].includes(app.view))showView('ended');
+  renderEndedDeliveryState();
   return true;
 }
 function schedulePublicPhase(){
@@ -279,9 +304,10 @@ function updateScheduledExperience(now=siteNow()){
   if(homeRegister){homeRegister.disabled=false;homeRegister.textContent=now>REGISTRATION_DEADLINE?'Залишити заявку':'Зареєструватися'}
   const registrationLead=document.getElementById('registrationLead');
   if(registrationLead)registrationLead.textContent=now>REGISTRATION_DEADLINE
-    ? 'Основна реєстрація завершена. Ви все одно можете залишити контакти: заявку збережемо як запізнілу, але доступ до цього тестування не надаватиметься.'
+    ? (now>=PUBLIC_END_SCREEN_AT?'Залиште контакти, щоб дізнатися про наступний пробний НМТ. Орієнтовна дата — 28 листопада 2026. Заявка не надає доступу до завершеного тестування 31 жовтня.':'Основна реєстрація завершена. Ви все одно можете залишити контакти: заявку збережемо як запізнілу, але доступ до цього тестування не надаватиметься.')
     : 'Заявки приймаємо до 30 жовтня 2026, 23:59 за київським часом.';
   updateLoginAvailability(now);updateLobbyAvailability(now);applyPublicPhase(now);
+  if(!publicEndReached(now)&&pendingResults().length&&!resultFlushPromise&&siteNow()-lastResultFlushAt>=RESULT_RETRY_DELAY)flushPendingResults(resultModal.classList.contains("show"));
 }
 document.getElementById("brandHome").addEventListener("click",()=>{if(activeExamStage()&&!publicEndReached()){alert("Спочатку завершіть активний етап тестування.");return}showView(publicEndReached()?"ended":"home")});
 updateScheduledExperience();
@@ -424,7 +450,7 @@ function startStageTimer(){
   clearInterval(app.timerId);
   const update=()=>{
     app.secondsLeft=Math.max(0,Math.ceil((app.stageEndsAt-Date.now())/1000));timerText.textContent=fmtTime(app.secondsLeft);
-    [600,300,60].forEach(x=>{if(app.secondsLeft<=x)showTimeWarning(x)});
+    [600,300,60].forEach(x=>{if(app.secondsLeft>0&&app.secondsLeft<=x)showTimeWarning(x)});
     if(app.secondsLeft<=0){clearInterval(app.timerId);if(app.stage===1)startBreak(true);else finishWholeTest(true)}
   };
   update();app.timerId=setInterval(update,1000);
@@ -570,7 +596,8 @@ confirmFinish.addEventListener("click",()=>{
 
 function maxQuestion(q){if(q.type==="number")return 2;if(q.type==="match")return q.rows.length;if(q.type==="sequence"||q.type==="multi")return 3;return 1}
 async function finishWholeTest(automatic=false){
-  clearInterval(app.timerId);app.stage=4;saveExamSession();syncExamMode();
+  clearInterval(app.timerId);clearInterval(app.breakId);app.stage=4;saveExamSession();syncExamMode();
+  breakModal.classList.remove("show");finishModal.classList.remove("show");warningToast.classList.remove("show");
   showResultLoading();
   resultModal.classList.add("show");
   const payload=buildResultPayload();queueResult(payload);logEvent("test_complete","exam",automatic?"automatic":"manual");
@@ -580,6 +607,7 @@ async function finishWholeTest(automatic=false){
 }
 repeatTestBtn.addEventListener("click",resetParticipantProgress);resultHome.addEventListener("click",()=>{resultModal.classList.remove("show");showView(publicEndReached()?"ended":"home")});
 retryResultBtn.addEventListener("click",async()=>{showResultLoading();const sent=await flushPendingResults(true);if(sent)localStorage.removeItem(STORAGE.session)});
+document.getElementById("endedRetryResultBtn").addEventListener("click",()=>flushPendingResults(false));
 telegramResultBtn.href=`https://t.me/${CONFIG.TELEGRAM_BOT_USERNAME}`;
 
 /* Соцмережі */

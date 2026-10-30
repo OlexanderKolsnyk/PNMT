@@ -6,17 +6,17 @@
 <title>Пробний мультитест — Kolisnyk Academy</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=1">
 <meta name="description" content="Пробний НМТ у форматі, наближеному до реального тестувальника: реєстрація, персональний доступ, 2 етапи, 20-хвилинна перерва та 4 предмети.">
-<link rel="stylesheet" href="assets/styles.css?v=60">
+<link rel="stylesheet" href="assets/styles.css?v=20261030-final">
 </head>
 <body>
 
 <header class="top"><div class="topin">
 <button class="brand" id="brandHome"><span class="logo">PM</span><span><strong>Пробний мультитест</strong><small>Розроблено Kolisnyk Academy</small></span></button>
-<nav class="desktop-nav" aria-label="Основна навігація"><button data-nav="ended" class="post-event-only" hidden>Завершити тест</button><button data-nav="home" class="active">Головна</button><button data-nav="register">Реєстрація</button><button data-nav="tutors">Підготовка</button><button data-nav="login">Вхід</button><a class="telegram-bot-nav" href="https://t.me/Kolisnyk_academy_bot" target="_blank" rel="noopener">Telegram-бот</a></nav>
+<nav class="desktop-nav" aria-label="Основна навігація"><button data-nav="ended" class="post-event-only" hidden>Підсумки тесту</button><button data-nav="home" class="active">Головна</button><button data-nav="register">Реєстрація</button><button data-nav="tutors">Підготовка</button><button data-nav="login">Вхід</button><a class="telegram-bot-nav" href="https://t.me/Kolisnyk_academy_bot" target="_blank" rel="noopener">Telegram-бот</a></nav>
 </div></header>
 
 <nav class="mobile-nav" aria-label="Мобільна навігація">
-<button data-nav="ended" class="post-event-only" hidden>Завершити тест</button>
+<button data-nav="ended" class="post-event-only" hidden>Підсумки тесту</button>
 <button data-nav="home" class="active">Головна</button>
 <button data-nav="register">Реєстрація</button>
 <button data-nav="login" class="mobile-login"><svg class="mobile-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M14 8l4 4-4 4M8 12h10"/></svg><span>Вхід</span></button>
@@ -74,23 +74,26 @@
   <div class="eyebrow">Пробний мультитест · 31 жовтня 2026</div>
   <h1 id="endedTitle">Дякуємо, що прийшли!</h1>
   <p class="lead">Пробний НМТ завершився о 14:20. Дякуємо, що перевірили свої знання разом із Kolisnyk Academy.</p>
-  <div class="post-event-note"><b>Якщо ви не встигли пройти або завершити тест — не засмучуйтеся.</b> Це не останнє тестування: ми повідомимо про наступні можливості окремо.</div>
+  <div class="post-event-note"><b>Якщо ви не встигли пройти або завершити тест — не засмучуйтеся.</b> Наступний пробний НМТ плануємо орієнтовно на 28 листопада 2026 року.</div>
   <div class="actions post-event-actions">
-    <button class="btn primary" data-nav="ended">Завершити тест</button>
+    <button class="btn primary" data-nav="register">Дізнатися про наступний тест</button>
     <button class="btn ghost" data-nav="tutors">Підготовка в Kolisnyk Academy</button>
   </div>
 </div>
+
+<div id="endedDeliveryState" class="status" role="status" aria-live="polite" hidden></div>
+<button id="endedRetryResultBtn" class="btn primary hide" type="button" hidden>Повторити надсилання відповідей</button>
 
 <div class="post-event-grid">
   <article class="card post-event-card">
     <span class="post-event-icon" aria-hidden="true">01</span>
     <h2>Що буде з результатом?</h2>
-    <p>Збережені відповіді та результат передано організаторам. Якщо надсилання перервалося через інтернет, сайт повторить його автоматично з цього пристрою.</p>
+    <p>Сайт передає збережені відповіді організаторам. Якщо надсилання перервалося, залиште сторінку відкритою: сайт повторить його автоматично або після натискання кнопки повторного надсилання.</p>
   </article>
   <article class="card post-event-card">
     <span class="post-event-icon" aria-hidden="true">02</span>
     <h2>Як потрапити на наступний тест?</h2>
-    <p>Не покладайтеся на збережене посилання: для наступного тестування можуть бути інша сторінка й нові персональні дані для входу. Стежте за повідомленнями або напишіть нам.</p>
+    <p>Орієнтовна дата наступного пробного НМТ — 28 листопада 2026 року. Залиште контакти, щоб отримати повідомлення про реєстрацію та умови участі.</p>
   </article>
   <article class="card post-event-card">
     <span class="post-event-icon" aria-hidden="true">03</span>
@@ -101,7 +104,7 @@
 </div>
 
 <div class="card post-event-footer">
-  <div><div class="eyebrow">Далі — більше</div><h2>До зустрічі на наступних тестуваннях</h2></div>
+  <div><div class="eyebrow">Далі — більше</div><h2>Наступний пробний НМТ — орієнтовно 28 листопада</h2></div>
   <p>Kolisnyk Academy проводить підготовку з усіх чотирьох предметів пробного НМТ.</p>
 </div>
 </section>
@@ -401,7 +404,7 @@
 <div id="warningToast" class="warning-toast" role="status" aria-live="assertive"></div>
 <button class="prep-float" type="button" data-nav="tutors" aria-label="Перейти до підготовки до НМТ з Kolisnyk Academy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5 12 3l8 2.5-8 2.6-8-2.6Zm3 2v5.2c0 1.7 2.2 3.3 5 3.3s5-1.6 5-3.3V7.5M20 6v6"/></svg><span>Підготовка до НМТ з нами</span></button>
 <script src="assets/exam-data.js?v=20261030"></script>
-<script src="assets/app.js?v=20261030"></script>
+<script src="assets/app.js?v=20261030-final"></script>
 
 </body>
 </html>

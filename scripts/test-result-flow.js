@@ -16,7 +16,7 @@ const checks = {
     app.includes("if(isTestUser())") &&
     app.includes('resultGrid.classList.add("hide")'),
   successAfterServerConfirmation:
-    /const response=await api\(item\);[\s\S]{0,300}if\(showResult\)renderResultResponse\(response\)/.test(app),
+    /const response=await api\(item\);[\s\S]{0,300}if\(resultFlushShowResult\)renderResultResponse\(response\)/.test(app),
   responsiveResultLayout:
     css.includes(".result-secondary-actions{grid-template-columns:1fr}") &&
     css.includes(".telegram-result-info{grid-template-columns:1fr"),
