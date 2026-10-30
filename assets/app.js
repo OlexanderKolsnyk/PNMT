@@ -12,7 +12,9 @@ const CONFIG={
 
 // GitHub Pages repositories share an origin, so scope browser state to this site.
 // Keep the old unscoped keys untouched for the test site and recovery.
-const STORAGE_PREFIX="pnmt:"+new URL(".",location.href).pathname+":";
+const EXAM_CONTENT_VERSION="pnmt-2026-10-30";
+const SITE_STORAGE_PREFIX="pnmt:"+new URL(".",location.href).pathname+":";
+const STORAGE_PREFIX=SITE_STORAGE_PREFIX+EXAM_CONTENT_VERSION+":";
 const STORAGE=Object.fromEntries(Object.entries({
   participants:"probne_nmt_participants_v36",
   settings:"probne_nmt_settings_v36",
@@ -26,7 +28,7 @@ const STORAGE=Object.fromEntries(Object.entries({
   analyticsVisitorId:"probne_nmt_analytics_visitor_v1",
   visited:"probne_nmt_visited_v4",
   flagged:"probne_nmt_flagged_v4"
-}).map(([name,key])=>[name,STORAGE_PREFIX+key]));
+}).map(([name,key])=>[name,(["settings","registrationId","attribution","analyticsVisitorId"].includes(name)?SITE_STORAGE_PREFIX:STORAGE_PREFIX)+key]));
 
 const LABELS={
   ukrainian:"Українська мова",
@@ -34,32 +36,6 @@ const LABELS={
   history:"Історія України",
   english:"Англійська мова"
 };
-
-/* Точний порядок ФОРМ завдань за НМТ-2026:
-   Українська: 1–25 single, 26–30 matching
-   Математика: 1–15 single5, 16–18 matching3, 19–22 numeric
-   Історія: 1–20 single4, 21–24 matching4, 25–27 ordering, 28–30 multi3of7
-   Англійська: 1–5 matching-choice, 6–10 single4, 11–16 matching-choice,
-               17–22 gap-choice, 23–27 single4, 28–32 single4.
-*/
-
-function range(n, fn){return Array.from({length:n},(_,i)=>fn(i+1))}
-function genericQuestion(subject,n,type){
-  const base={
-    number:n,type,
-    source:`${LABELS[subject]} · демонстраційна структура НМТ-2026`,
-    prompt:`Завдання ${n}. Інтерфейс і тип відповіді відповідають позиції цього завдання в демонстраційному варіанті. Точний текст завдання можна підставити в об'єкт QUESTION_TEXTS без зміни логіки тестувальника.`,
-    correct:null
-  };
-  if(type==="single4") base.options=["Варіант А","Варіант Б","Варіант В","Варіант Г"];
-  if(type==="single5") base.options=["Варіант А","Варіант Б","Варіант В","Варіант Г","Варіант Д"];
-  if(type==="single8"||type==="gap8") base.options=["A","B","C","D","E","F","G","H"];
-  if(type==="matching4") {base.rows=["1","2","3","4"];base.options=["А","Б","В","Г","Д"]}
-  if(type==="matching3") {base.rows=["1","2","3"];base.options=["А","Б","В","Г","Д"]}
-  if(type==="ordering") {base.rows=["А","Б","В","Г"]}
-  if(type==="multi7") base.options=["1","2","3","4","5","6","7"];
-  return base;
-}
 
 const QUESTION_BANK=IMPORTED_EXAMS;
 
@@ -171,7 +147,7 @@ function pendingResults(){return safeParse(localStorage.getItem(STORAGE.pendingR
 function savePendingResults(items){if(items.length)localStorage.setItem(STORAGE.pendingResults,JSON.stringify(items));else localStorage.removeItem(STORAGE.pendingResults)}
 function createSubmissionId(){return crypto.randomUUID?crypto.randomUUID():"sub-"+Date.now()+"-"+Math.random().toString(36).slice(2)}
 function currentSubmissionId(){let id=localStorage.getItem(STORAGE.submissionId);if(!id){id=createSubmissionId();localStorage.setItem(STORAGE.submissionId,id)}return id}
-function buildResultPayload(){return {action:"saveResult",client_submission_id:currentSubmissionId(),login:app.user?.login||"",token:app.user?.token||"",answers:app.answers,answer_saved_at:app.answerTimes,attempt_started_at:app.attemptStartedAt?new Date(app.attemptStartedAt).toISOString():"",submitted_at:new Date().toISOString()}}
+function buildResultPayload(){return {action:"saveResult",exam_version:EXAM_CONTENT_VERSION,client_submission_id:currentSubmissionId(),login:app.user?.login||"",token:app.user?.token||"",answers:app.answers,answer_saved_at:app.answerTimes,attempt_started_at:app.attemptStartedAt?new Date(app.attemptStartedAt).toISOString():"",submitted_at:new Date().toISOString()}}
 function queueResult(payload){const items=pendingResults().filter(item=>item.client_submission_id!==payload.client_submission_id);items.push(payload);savePendingResults(items)}
 function renderResultResponse(response){
   const results=response?.results||{};
@@ -224,11 +200,6 @@ function showView(id){
   document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===id));
   window.scrollTo({top:0,behavior:"smooth"});
   if(id==="tutors") renderSocials();
-function renderArchivePages(){
-  if(mathReferencePages&&!mathReferencePages.childElementCount)mathReferencePages.innerHTML=Object.values(SOURCE_PAGES.mathRef||{}).map(x=>`<div class="pdf-code-viewport">${x}</div>`).join("");
-  if(english2024Pages&&!english2024Pages.childElementCount)english2024Pages.innerHTML=Object.values(SOURCE_PAGES.english2024||{}).map(x=>`<div class="pdf-code-viewport">${x}</div>`).join("");
-}
-document.querySelectorAll(".archive-block").forEach(x=>x.addEventListener("toggle",()=>{if(x.open)renderArchivePages()}));
 }
 document.querySelectorAll("[data-nav]").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.nav)));
 function publicEndReached(now=siteNow()){return now>=PUBLIC_END_SCREEN_AT&&!isTestUser()}
@@ -531,27 +502,15 @@ function enforceUniqueMatch(source){
   const used=new Set(selects.map(x=>x.value).filter(Boolean));
   selects.forEach(select=>[...select.options].forEach(option=>{option.disabled=Boolean(option.value&&used.has(option.value)&&select.value!==option.value)}));
 }
-const ENGLISH_READING_6_10=`<div class="shared-passage"><h3>The cheese that keeps its secret</h3><p>When the author arrived in Burträsk, a small village in northern Sweden, even the reindeer seemed difficult to catch on camera. But wildlife was not the reason for the journey. The author had come to investigate the mystery of Västerbottensost, a celebrated local cheese that cannot be successfully produced anywhere else.</p><p>Demand for the cheese is high, so the dairy once tried to increase production in the nearby city of Umeå. Although the same recipe and methods were used, the result did not have the distinctive flavour of the cheese made in Burträsk. Specialists have studied the milk, local conditions and even the microorganisms in the dairy, but the mystery remains unsolved.</p><p>According to local legend, Västerbottensost was created by accident in 1872. A dairymaid became distracted by a romantic visitor and repeatedly reheated the curds. What first appeared to be a mistake eventually produced the cheese's characteristic taste.</p><p>Today the work combines modern equipment with traditional skill. During production, experienced workers still use their hands to feel the curds and judge whether their texture is right. The finished cheese is then left to mature before it can be sold.</p><p>At the end of the visit, the author sampled the cheese in several possible combinations. Rather than choosing bread, lasagne or ice cream, the author ate it with biscuits and fruit syrup, which balanced its tangy, nutty flavour.</p></div>`;
-function applyUkrainianContentCorrections(q){
-  if(app.subject!=="ukrainian")return;
-  if(q.number===10){const option=q.options.find(item=>item.id==="Б");if(option)option.text="стріле..о, одино..о, студент..о"}
-  if(q.number===18){const option=q.options.find(item=>item.id==="В");if(option)option.text="прибув зі Львов.., основи світогляд.."}
-  if(q.number===27){q.rows[0]="Прагнучи з’ясувати причину проблеми, ви маєте говорити прямо, а не […] цієї теми, оскільки це заважає порозумінню.";q.rows[2]="Замість того щоб відверто визнати власну помилку й виправити ситуацію, керівник почав […]."}
-  if(q.number===29){const option=q.options.find(item=>item.id==="Б");if(option)option.text="За оцінками музикознавців, голос Квітки Цісик мав унікальний обертон, притаманний лише колоритному сопрано."}
-}
 function renderQuestion(){
   if(!(app.stage===1||app.stage===3))return;updateSubjects();const q=QUESTION_BANK[app.subject]?.[app.questionIndex];if(!q)return;
-  applyUkrainianContentCorrections(q);
   const key=keyFor(app.subject,app.questionIndex);app.visited[key]=true;localStorage.setItem(STORAGE.visited,JSON.stringify(app.visited));
   questionTitle.textContent=`${LABELS[app.subject]} · завдання ${q.number}`;typePill.textContent=typeName(q.type);
-  questionContent.classList.toggle("ukrainian-letter-highlights",app.subject==="ukrainian"&&q.number<=2);
+  questionContent.classList.toggle("ukrainian-letter-highlights",app.subject==="ukrainian"&&[2,5].includes(q.number));
   questionContent.classList.toggle("ukrainian-linear-options",app.subject==="ukrainian"&&q.number<=25);
   questionContent.classList.toggle("ukrainian-wide-match",app.subject==="ukrainian"&&(q.number===28||q.number===29));
-  questionContent.classList.toggle("history-cartoon-options",app.subject==="history"&&q.number===30);
-  if(app.subject==="english"&&q.number>=17&&q.number<=22){const optionF=q.options.find(option=>option.id==="F");if(optionF)optionF.text="by facing challenges on your own"}
-  const reading=app.subject==="english"&&q.number>=6&&q.number<=10?ENGLISH_READING_6_10:"";
-  const example=app.subject==="ukrainian"&&q.number===30?'<div class="syntax-example" aria-label="Зразок подібності синтаксичного значення"><div class="syntax-example-part"><span>як? у який спосіб?</span><b>Я пишу <em>швидко</em>.</b></div><div class="syntax-example-arrow" aria-hidden="true">⇄</div><div class="syntax-example-part"><span>як? у який спосіб?</span><b>Іван грає так, <em>як його навчили</em>.</b></div></div>':"";
-  const saved=app.answers[key];questionContent.innerHTML=`<article class="question-card imported-question"><div class="source-toolbar"><b>${esc(q.source)}</b><span></span></div>${reading}${q.promptHtml}${example}</article>${answerControls(q,saved)}`;
+  questionContent.classList.toggle("history-cartoon-options",app.subject==="history"&&q.number===27);
+  const saved=app.answers[key];questionContent.innerHTML=`<article class="question-card imported-question"><div class="source-toolbar"><b>${esc(q.source)}</b><span></span></div>${q.promptHtml}</article>${answerControls(q,saved)}`;
   savedMessage.classList.remove("show");
   if(q.type==="match")enforceUniqueMatch();
   if(q.type==="multi")document.querySelectorAll('input[name="multi"]').forEach(ch=>ch.addEventListener("change",()=>{const selected=[...document.querySelectorAll('input[name="multi"]:checked')];if(selected.length>3){ch.checked=false;alert("У цьому завданні можна вибрати лише три відповіді.")}}));
@@ -609,18 +568,6 @@ confirmFinish.addEventListener("click",()=>{
   if(app.stage===1)startBreak();else finishWholeTest()
 });
 
-function normalizeNumber(v){const x=String(v??"").trim().replace(/\s+/g,"").replace(/[−–—]/g,"-").replace(",",".");const n=Number(x);return Number.isFinite(n)?String(n):x}
-function scoreQuestion(q,answer){
-  if(q.type==="single")return answer===q.correct?1:0;
-  if(q.type==="number")return normalizeNumber(answer)===normalizeNumber(q.correct)?2:0;
-  if(q.type==="match")return q.correct.reduce((sum,key,i)=>sum+(Array.isArray(answer)&&answer[i]===key?1:0),0);
-  if(q.type==="multi")return q.correct.reduce((sum,key)=>sum+(Array.isArray(answer)&&answer.includes(key)?1:0),0);
-  if(q.type==="sequence"){
-    if(!Array.isArray(answer))return 0;if(answer.join("")===q.correct.join(""))return 3;
-    const first=answer[0]===q.correct[0],last=answer[3]===q.correct[3];return first&&last?2:first||last?1:0;
-  }
-  return 0;
-}
 function maxQuestion(q){if(q.type==="number")return 2;if(q.type==="match")return q.rows.length;if(q.type==="sequence"||q.type==="multi")return 3;return 1}
 async function finishWholeTest(automatic=false){
   clearInterval(app.timerId);app.stage=4;saveExamSession();syncExamMode();

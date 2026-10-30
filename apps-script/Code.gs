@@ -49,6 +49,7 @@ function doPost(e) {
     if (action === "publicConfig") return json_({ok:true,config:publicConfig_()});
     if (action === "register") return json_(register_(payload));
     if (action === "login") return json_(participantLogin_(payload));
+    if (action === "saveResult") return json_(pnmtSaveResult_(payload));
     if (action === "logEvent") return json_(logEvent_(payload));
     if (action === "adminLogin") return json_(adminLogin_(payload));
     if (action === "adminLogout") return json_(adminLogout_(payload));
@@ -64,7 +65,7 @@ function doPost(e) {
 }
 
 function doGet() {
-  return json_({ok:true});
+  return json_(pnmtExamInfo_());
 }
 
 function setupSheets() {
@@ -185,6 +186,7 @@ function participantLogin_(payload) {
   return {
     ok:true,
     user:{
+      token:pnmtIssueSession_(record),
       registration_id:String(record.RegistrationID || ""),
       name:String(record.Name || ""),
       login:String(record.Login || login),
