@@ -7,6 +7,7 @@ const code = fs.readFileSync(path.join(__dirname, '../apps-script/bot/Credential
 const digest = value => crypto.createHash('sha256').update(value).digest('hex');
 const fields = ['RegistrationID','Status','Login','Password','PasswordHash','PasswordSalt','AccessStatus','PasswordCiphertext','CredentialIssuedAt','CredentialDeliveredAt','PasswordHashScheme','Математика'];
 let fresh, writes, generated;
+let vaultKey = 'existing-test-key';
 const headers = Object.fromEntries(fields.map((f,i) => [f,i+1]));
 const sheet = {getLastRow:()=>2,getLastColumn:()=>fields.length,getRange(row,col,numRows){return {
   setValue(value){const field=fields[col-1];writes.push(field);fresh[field]=value;},
@@ -14,6 +15,7 @@ const sheet = {getLastRow:()=>2,getLastColumn:()=>fields.length,getRange(row,col
 };}};
 const ctx = vm.createContext({
   console, Date, LockService:{getScriptLock:()=>({waitLock(){},releaseLock(){}})},
+  PropertiesService:{getScriptProperties:()=>({getProperty:()=>vaultKey,setProperty(){throw Error('Must not replace vault key');}})},
   getSourceSheet:()=>sheet,readSourceRow:()=>({...fresh}),ensureSourceCredentialHeaders_:()=>headers,
   credentialDigestHex_:digest,safeCredentialEqual_:(a,b)=>a===b,
   openCredential_:c=>{if(!c.startsWith('sealed:'))throw Error('corrupt');return c.slice(7);},
@@ -22,6 +24,8 @@ const ctx = vm.createContext({
   getParticipantByTelegramId:()=>({TelegramID:'test'}),resolveSourceForParticipant:()=>({...fresh,__row:2})
 });
 vm.runInContext(code,ctx);
+assert.equal(ctx.getOrCreateCredentialVaultKey_(),'existing-test-key');
+vaultKey='';assert.throws(()=>ctx.getOrCreateCredentialVaultKey_(),/missing/);vaultKey='existing-test-key';
 const original={RegistrationID:'test-id',Login:'KEEP-LOGIN',PasswordSalt:'keep-salt',PasswordHash:digest('keep-salt:keep-password'),AccessStatus:'Активний',Status:'Дані доступу видано',CredentialIssuedAt:'old-date','Математика':177};
 function reset(extra={}){fresh={...original,...extra};writes=[];generated=0;}
 function issue(){return ctx.getCredentialsByTelegramId('test');}

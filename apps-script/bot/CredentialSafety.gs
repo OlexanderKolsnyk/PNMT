@@ -1,5 +1,13 @@
 // Telegram backend only. Install by REPLACING the same-named functions.
 // Never install alongside duplicate function definitions.
+function getOrCreateCredentialVaultKey_() {
+  const key = String(PropertiesService.getScriptProperties().getProperty("CREDENTIAL_VAULT_KEY") || "");
+  // This production vault is already initialized. A missing key is an outage,
+  // not permission to replace the key and invalidate existing ciphertext.
+  if (!key) throw new Error("Credential vault key missing; restore the existing key");
+  return key;
+}
+
 function sourceAccessDenied_(source) {
   return ["Запізніла реєстрація", "Відмовлено", "Дубль"].indexOf(String(source.Status || "")) >= 0 ||
     Boolean(source.AccessStatus && source.AccessStatus !== "Активний");

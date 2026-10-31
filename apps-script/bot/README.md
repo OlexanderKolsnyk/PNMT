@@ -1,6 +1,6 @@
 # Telegram credential safety
 
-`CredentialSafety.gs` contains replacements for the Telegram backend, not the website project. Replace the four existing functions `sourcePasswordMatches_`, `ensureSourceCredentials_`, `getCredentialsByTelegramId`, and `generatePendingCredentials`, and add the four supporting helpers. Do not retain duplicate definitions. Keep the existing vault implementation and its key.
+`CredentialSafety.gs` contains replacements for the Telegram backend, not the website project. Replace the five existing functions `getOrCreateCredentialVaultKey_`, `sourcePasswordMatches_`, `ensureSourceCredentials_`, `getCredentialsByTelegramId`, and `generatePendingCredentials`, and add the four supporting helpers. Do not retain duplicate definitions. Keep the existing cipher implementation and its key. This existing production vault must fail closed if its key is missing; automatic key replacement is disabled.
 
 Existing records must have a recoverable password, a login, and a matching complete SHA-256 hash/salt pair. Repeated issuance preserves the password, login, ciphertext, salt, hash, issue timestamp and scores. Denied, late and duplicate records are not activated. Test status is preserved. Conflicting, incomplete, corrupt and hash-only records require explicit recovery; they never cause password regeneration.
 
