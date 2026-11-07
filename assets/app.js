@@ -1,9 +1,9 @@
 const CONFIG={
   SHEETS_ENDPOINT:"https://script.google.com/macros/s/AKfycbw0Lj8RtqIamar2h9yXeazFTadYvfIfsTqUpcKcPK1mEi8cV-XqfP97SzwzVKRu-IeN/exec",
   ANALYTICS_ENDPOINT:"https://script.google.com/macros/s/AKfycbw4sVRam4j1jR6TAq7AgqKHczS7NFXvvdI6iFjin1Pu0gS0E5HSGZ_4VHiGMeetojlIUA/exec",
-  DEFAULT_DEADLINE:"2026-10-30T23:59",
-  DEFAULT_TEST_START:"2026-10-31T10:00",
-  DEFAULT_TEST_END:"2026-10-31T14:20",
+  DEFAULT_DEADLINE:"2026-12-04T23:59",
+  DEFAULT_TEST_START:"2026-12-05T10:00",
+  DEFAULT_TEST_END:"2026-12-05T14:20",
   TELEGRAM_BOT_USERNAME:"Kolisnyk_academy_bot",
   DEMO_LOGIN:"",
   DEMO_PASSWORD:"",
@@ -13,7 +13,7 @@ const CONFIG={
 // GitHub Pages repositories share an origin, so scope browser state to this site.
 // Keep the old unscoped keys untouched for the test site and recovery.
 const EXAM_CONTENT_VERSION="pnmt-2026-10-30";
-const EXAM_EVENT_ID="2026-10-31";
+const EXAM_EVENT_ID="2026-12-05";
 const SITE_STORAGE_PREFIX="pnmt:"+new URL(".",location.href).pathname+":";
 const STORAGE_PREFIX=SITE_STORAGE_PREFIX+EXAM_EVENT_ID+":"+EXAM_CONTENT_VERSION+":";
 const STORAGE=Object.fromEntries(Object.entries({
@@ -74,9 +74,9 @@ const app={
 };
 
 
-const EXAM_SCHEDULE={login:Date.parse('2026-10-31T09:00:00+02:00'),start:Date.parse('2026-10-31T10:00:00+02:00'),firstEnd:Date.parse('2026-10-31T12:00:00+02:00'),secondStart:Date.parse('2026-10-31T12:20:00+02:00'),end:Date.parse('2026-10-31T14:20:00+02:00')};
-const REGISTRATION_DEADLINE=Date.parse('2026-10-30T23:59:00+02:00');
-const EXAM_DAY_START=Date.parse('2026-10-31T00:00:00+02:00');
+const EXAM_SCHEDULE={login:Date.parse('2026-12-05T09:00:00+02:00'),start:Date.parse('2026-12-05T10:00:00+02:00'),firstEnd:Date.parse('2026-12-05T12:00:00+02:00'),secondStart:Date.parse('2026-12-05T12:20:00+02:00'),end:Date.parse('2026-12-05T14:20:00+02:00')};
+const REGISTRATION_DEADLINE=Date.parse('2026-12-04T23:59:00+02:00');
+const EXAM_DAY_START=Date.parse('2026-12-05T00:00:00+02:00');
 const PUBLIC_END_SCREEN_AT=EXAM_SCHEDULE.end;
 function isTestUser(){return app.user?.testAccess===true}
 const EMERGENCY_STAGE1_REOPEN_LOGINS=new Set(["pnmt-bef41caf78"]);
@@ -287,9 +287,9 @@ function updateScheduledExperience(now=siteNow()){
   document.querySelectorAll('.exam-day-only').forEach(button=>{button.hidden=now<=REGISTRATION_DEADLINE||now>=PUBLIC_END_SCREEN_AT});
   if(homeLogin){homeLogin.hidden=now<EXAM_DAY_START||now>=PUBLIC_END_SCREEN_AT;homeLogin.classList.toggle('primary',now>=EXAM_DAY_START);homeLogin.classList.toggle('ghost',now<EXAM_DAY_START)}
   if(now<=REGISTRATION_DEADLINE){
-    setText('homeEyebrow','Пробний мультитест 2026');setText('homeTitle','НМТ буде 31 жовтня о 10:00');setText('homeLead','Перевір знання, відчуй темп тестування та спокійніше зайди в реальний іспит. Чотири предмети, два етапи та формат, наближений до НМТ.');setText('homePhaseLabel','Реєстрація відкрита до');setText('homePhaseValue','30 жовтня 2026 · 23:59');paintCountdown(REGISTRATION_DEADLINE);setQuick([['Заповнити реєстрацію','Телефон і актуальний Telegram обов’язкові.'],['Отримати пароль у Telegram','Після реєстрації перейди до нашого бота.'],['Увійти 31 жовтня','Для кожного учасника буде персональний доступ.']]);
+    setText('homeEyebrow','Реєстрацію відкрито · 5 грудня 2026');setText('homeTitle','НМТ буде 5 грудня о 10:00');setText('homeLead','Перевір знання, відчуй темп тестування та спокійніше зайди в реальний іспит. Чотири предмети, два етапи та формат, наближений до НМТ.');setText('homePhaseLabel','Реєстрація відкрита до');setText('homePhaseValue','4 грудня 2026 · 23:59');paintCountdown(REGISTRATION_DEADLINE);setQuick([['Заповнити реєстрацію','Телефон і актуальний Telegram обов’язкові.'],['Отримати пароль у Telegram','Після реєстрації перейди до нашого бота.'],['Увійти 5 грудня','Для кожного учасника буде персональний доступ.']]);
   }else if(now<EXAM_SCHEDULE.login){
-    setText('homeEyebrow','Сьогодні · 31 жовтня 2026');setText('homeTitle','Сьогодні — пробний НМТ');setText('homeLead','Тест почнеться о 10:00 за київським часом. Увійти до особистого кабінету можна буде вже о 09:00.');setText('homePhaseLabel','До початку мультитесту');setText('homePhaseValue',`Вхід відкриється о 09:00 — через ${compactCountdown(EXAM_SCHEDULE.login)}`);paintCountdown(EXAM_SCHEDULE.start);setQuick([['Підготувати логін і пароль','Отримай персональні дані в Telegram-боті після реєстрації.'],['Увійти з 09:00','Вхід відкриється за годину до початку.'],['Почати о 10:00','Кнопка старту активується автоматично.']]);
+    setText('homeEyebrow','Сьогодні · 5 грудня 2026');setText('homeTitle','Сьогодні — пробний НМТ');setText('homeLead','Тест почнеться о 10:00 за київським часом. Увійти до особистого кабінету можна буде вже о 09:00.');setText('homePhaseLabel','До початку мультитесту');setText('homePhaseValue',`Вхід відкриється о 09:00 — через ${compactCountdown(EXAM_SCHEDULE.login)}`);paintCountdown(EXAM_SCHEDULE.start);setQuick([['Підготувати логін і пароль','Отримай персональні дані в Telegram-боті після реєстрації.'],['Увійти з 09:00','Вхід відкриється за годину до початку.'],['Почати о 10:00','Кнопка старту активується автоматично.']]);
   }else if(now<EXAM_SCHEDULE.start){
     setText('homeEyebrow','Вхід відкрито');setText('homeTitle','Увійди перед початком');setText('homeLead','Увійди до кабінету, прочитай правила та підтвердь готовність. Розпочати тест можна буде рівно о 10:00.');setText('homePhaseLabel','До початку тесту');setText('homePhaseValue','Кнопка старту активується о 10:00');paintCountdown(EXAM_SCHEDULE.start);setQuick([['Увійти до кабінету','Використай персональні логін і пароль.'],['Прочитати правила','Підтверди ознайомлення галочкою.'],['Дочекатися 10:00','Таймер покаже точний час до старту.']]);
   }else if(now<EXAM_SCHEDULE.firstEnd){
@@ -304,8 +304,8 @@ function updateScheduledExperience(now=siteNow()){
   if(homeRegister){homeRegister.disabled=false;homeRegister.textContent=now>REGISTRATION_DEADLINE?'Залишити заявку':'Зареєструватися'}
   const registrationLead=document.getElementById('registrationLead');
   if(registrationLead)registrationLead.textContent=now>REGISTRATION_DEADLINE
-    ? (now>=PUBLIC_END_SCREEN_AT?'Залиште контакти, щоб дізнатися про наступний пробний НМТ. Орієнтовна дата — 28 листопада 2026. Заявка не надає доступу до завершеного тестування 31 жовтня.':'Основна реєстрація завершена. Ви все одно можете залишити контакти: заявку збережемо як запізнілу, але доступ до цього тестування не надаватиметься.')
-    : 'Заявки приймаємо до 30 жовтня 2026, 23:59 за київським часом.';
+    ? (now>=PUBLIC_END_SCREEN_AT?'Залиште контакти, щоб дізнатися про наступний пробний НМТ. Дату повідомимо окремо. Заявка не надає доступу до завершеного тестування 5 грудня.':'Основна реєстрація завершена. Ви все одно можете залишити контакти: заявку збережемо як запізнілу, але доступ до цього тестування не надаватиметься.')
+    : 'Заявки приймаємо до 4 грудня 2026, 23:59 за київським часом.';
   updateLoginAvailability(now);updateLobbyAvailability(now);applyPublicPhase(now);
   if(!publicEndReached(now)&&pendingResults().length&&!resultFlushPromise&&siteNow()-lastResultFlushAt>=RESULT_RETRY_DELAY)flushPendingResults(resultModal.classList.contains("show"));
 }
@@ -385,7 +385,7 @@ loginForm.addEventListener("submit",async e=>{
       else user=getLocalParticipants().find(x=>x.login===login&&x.password===password);
     }
     if(!user) throw new Error("Невірний логін або пароль.");
-    if(user.testAccess!==true&&beforePublicLogin)throw new Error('Вхід відкриється 31 жовтня о 09:00 за київським часом.');
+    if(user.testAccess!==true&&beforePublicLogin)throw new Error('Вхід відкриється 5 грудня о 09:00 за київським часом.');
     if(user.testAccess!==true&&siteNow()>=EXAM_SCHEDULE.end)throw new Error('Тестування завершено.');
     app.user=user;if(user.registration_id)localStorage.setItem(STORAGE.registrationId,user.registration_id);logEvent("login_success","exam","participant_login");updateTestControls();
     saveExamSession();
@@ -393,7 +393,7 @@ loginForm.addEventListener("submit",async e=>{
     box.className="status ok show";box.textContent="Вхід успішний.";
     setTimeout(()=>showView("lobby"),300);
   }catch(err){
-    const message=beforePublicLogin?'Вхід відкриється 31 жовтня о 09:00 за київським часом.':err.message;
+    const message=beforePublicLogin?'Вхід відкриється 5 грудня о 09:00 за київським часом.':err.message;
     box.className="status err show";box.textContent=message;
     if(beforePublicLogin)alert(message);
   }
@@ -403,7 +403,7 @@ startTestBtn.addEventListener("click",()=>{
   if(!rulesAgree.checked){alert("Спочатку підтвердьте, що ознайомилися з правилами.");return}
   if(!app.user)return;
   if(!isTestUser()){
-    if(siteNow()<EXAM_SCHEDULE.start){alert('Тестування почнеться 31 жовтня о 10:00 за київським часом.');return}
+    if(siteNow()<EXAM_SCHEDULE.start){alert('Тестування почнеться 5 грудня о 10:00 за київським часом.');return}
     if(siteNow()>=EXAM_SCHEDULE.end){alert('Тестування завершено.');return}
     if(siteNow()>=EXAM_SCHEDULE.firstEnd){app.stage2StartsAt=EXAM_SCHEDULE.secondStart;syncExamMode();showView('exam');if(siteNow()>=EXAM_SCHEDULE.secondStart){app.stage2RulesAccepted=true;beginStage2()}else startBreak();return}
   }
